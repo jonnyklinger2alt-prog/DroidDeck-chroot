@@ -1,3 +1,7 @@
+THIS IS NOT THE OFFICIAL PROJECT THIS IS A FORK WITH CHROOT IMPLEMENTED INSTEAD OF PROOT AND REQUIRES ROOT!!!
+
+
+
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="artwork/droiddeck-banner-dark.svg">
