@@ -22,7 +22,7 @@ if [ "$phase" = --as-root ]; then
 fi
 pidns="$PIDNS"
 
-root= cwd=/root uid=0 gid=0 groups= hostname= fake=0
+root= cwd=/root uid=0 gid=0 groups= hostname= fake=0 log=
 while [ $# -gt 0 ]; do
     case "$1" in
         --root) root="$2"; shift 2 ;;
@@ -32,23 +32,34 @@ while [ $# -gt 0 ]; do
         --groups) groups="$2"; shift 2 ;;
         --hostname) hostname="$2"; shift 2 ;;
         --fake-root) fake=1; shift ;;
+        --log) log="$2"; shift 2 ;;
         *) break ;;
     esac
 done
+say() {
+    [ -n "$log" ] && echo "chroot: $*" >>"$log"
+    echo "chroot: $*" >&2
+}
+
 if [ -z "$root" ] || [ ! -d "$root" ]; then
-    echo "chroot: no root filesystem at '$root'" >&2
+    say "no root filesystem at '$root'"
     exit 127
 fi
 
 if [ "$phase" = --as-root ]; then
-    set -- --root "$root" --cwd "$cwd" --uid "$uid" --gid "$gid" --groups "$groups" --hostname "$hostname" "$@"
+    for tool in unshare mount chroot; do
+        command -v "$tool" >/dev/null || say "the host has no $tool"
+    done
+    set -- --root "$root" --cwd "$cwd" --uid "$uid" --gid "$gid" --groups "$groups" --hostname "$hostname" --log "$log" "$@"
     [ "$fake" = 1 ] && set -- --fake-root "$@"
+    exec 3<&0
     if unshare -m -p -f -u true 2>/dev/null; then
-        PIDNS=1 unshare -m -p -f -u /system/bin/sh "$self" --in-ns "$@" <&0 &
+        PIDNS=1 unshare -m -p -f -u /system/bin/sh "$self" --in-ns "$@" <&3 3<&- &
     else
-        PIDNS=0 unshare -m -u /system/bin/sh "$self" --in-ns "$@" <&0 &
+        PIDNS=0 unshare -m -u /system/bin/sh "$self" --in-ns "$@" <&3 3<&- &
     fi
     child=$!
+    exec 3<&-
 
     stop() {
         init=$(cat /proc/$child/task/$child/children 2>/dev/null)
@@ -80,6 +91,7 @@ if [ "$phase" = --as-root ]; then
     wait "$child"
     status=$?
     kill "$watchdog" 2>/dev/null
+    say "guest exited with status $status"
     # Real root writes uid 0 files, but the app owns the rootfs and must be able to update and remove it.
     if [ "$fake" = 1 ]; then
         find "$root" -xdev \( -user 0 -o -group 0 \) -exec chown -h "$uid:$gid" {} + 2>/dev/null
@@ -121,22 +133,29 @@ while [ "$1" = -b ]; do
         *) opt=bind ;;
     esac
     mount -o "$opt" "$src" "$root$dst" 2>/dev/null || mount "--$opt" "$src" "$root$dst" 2>/dev/null \
-        || echo "chroot: cannot bind $src to $dst" >&2
+        || say "cannot bind $src to $dst"
 done
 
 if [ $# -eq 0 ]; then
-    echo "chroot: no command" >&2
+    say "no command"
+    exit 127
+fi
+if [ ! -e "$root/bin/sh" ]; then
+    say "the root filesystem has no /bin/sh"
     exit 127
 fi
 
+if [ "$fake" != 1 ]; then
+    if [ ! -e "$root/usr/bin/setpriv" ]; then
+        say "the root filesystem has no /usr/bin/setpriv; install util-linux"
+        exit 127
+    fi
+    if [ -n "$groups" ]; then groupopt="--groups=$groups"; else groupopt=--clear-groups; fi
+    set -- /usr/bin/setpriv --reuid="$uid" --regid="$gid" "$groupopt" --inh-caps=-all -- "$@"
+fi
 enter='cd "$1" 2>/dev/null || cd /; shift; exec "$@"'
 exec 3<&0
-if [ "$fake" = 1 ]; then
-    chroot "$root" /bin/sh -c "$enter" sh "$cwd" "$@" <&3 3<&- &
-else
-    chroot "$root" /usr/sbin/chroot --userspec="$uid:$gid" ${groups:+--groups="$groups"} / \
-        /bin/sh -c "$enter" sh "$cwd" "$@" <&3 3<&- &
-fi
+chroot "$root" /bin/sh -c "$enter" sh "$cwd" "$@" <&3 3<&- &
 guest=$!
 exec 3<&-
 trap 'kill -TERM $guest 2>/dev/null' TERM HUP INT

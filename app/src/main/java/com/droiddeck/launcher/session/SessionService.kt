@@ -661,6 +661,7 @@ class SessionService : Service() {
         val command = LinuxRuntime.command(
             this, sessionRoot, runtimeDir, Environment.getExternalStorageDirectory(), binds, guest,
         )
+        command.addAll(2, listOf("--log", sessionLog.path))
 
         val hostEnv = HostEnvironment()
 
