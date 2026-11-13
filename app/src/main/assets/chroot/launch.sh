@@ -132,8 +132,8 @@ while [ "$1" = -b ]; do
         /dev|/sys|/proc) opt=rbind ;;
         *) opt=bind ;;
     esac
-    mount -o "$opt" "$src" "$root$dst" 2>/dev/null || mount "--$opt" "$src" "$root$dst" 2>/dev/null \
-        || say "cannot bind $src to $dst"
+    err=$(mount -o "$opt" "$src" "$root$dst" 2>&1) || err=$(mount "--$opt" "$src" "$root$dst" 2>&1) \
+        || say "cannot bind $src to $dst: $err"
 done
 
 if [ $# -eq 0 ]; then
@@ -155,7 +155,11 @@ if [ "$fake" != 1 ]; then
 fi
 enter='cd "$1" 2>/dev/null || cd /; shift; exec "$@"'
 exec 3<&0
-chroot "$root" /bin/sh -c "$enter" sh "$cwd" "$@" <&3 3<&- &
+if [ -n "$log" ]; then
+    chroot "$root" /bin/sh -c "$enter" sh "$cwd" "$@" <&3 3<&- >>"$log" 2>&1 &
+else
+    chroot "$root" /bin/sh -c "$enter" sh "$cwd" "$@" <&3 3<&- &
+fi
 guest=$!
 exec 3<&-
 trap 'kill -TERM $guest 2>/dev/null' TERM HUP INT
