@@ -1,6 +1,5 @@
 package com.droiddeck.launcher.runtime
 
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -24,13 +23,5 @@ class ProotFastPathTest {
     @Test fun moreBindsThanTheLibraryHoldsLeaveItOff() {
         val binds = (1..ProotFastPath.MAX_BINDS + 1).map { "/host/$it:/guest/$it" }
         assertNull(ProotFastPath.key(root, binds))
-    }
-
-    @Test fun fastPathStaysOffForTheRootfsProot() {
-        assertTrue(ProotFastPath.allows(preference = true, noSeccomp = false, source = LinuxRuntime.PROOT_PACK))
-        assertFalse(ProotFastPath.allows(preference = true, noSeccomp = false, source = LinuxRuntime.PROOT_ROOTFS))
-        assertFalse(ProotFastPath.allows(preference = true, noSeccomp = false, source = LinuxRuntime.PROOT_MISSING))
-        assertFalse(ProotFastPath.allows(preference = false, noSeccomp = false, source = LinuxRuntime.PROOT_PACK))
-        assertFalse(ProotFastPath.allows(preference = true, noSeccomp = true, source = LinuxRuntime.PROOT_PACK))
     }
 }

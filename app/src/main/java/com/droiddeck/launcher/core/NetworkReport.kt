@@ -81,7 +81,7 @@ object NetworkReport {
             append("\netc/droiddeck-net (the link as the session sees it):\n")
             FileUtils.readString(netdev)?.lines()?.forEach { append("    ").append(it).append('\n') }
         }
-        append("\nproot makes no network namespace, so the session uses the phone's connection\n")
+        append("\nthe chroot makes no network namespace, so the session uses the phone's connection\n")
         append("directly: IPv4 and IPv6 both pass through, and there is nothing to forward.\n")
         append("Steam reads Android's transport, connectivity and metering through the runtime's\n")
         append("NetworkManager D-Bus bridge. Android settings manage Wi-Fi and cellular connections.\n")

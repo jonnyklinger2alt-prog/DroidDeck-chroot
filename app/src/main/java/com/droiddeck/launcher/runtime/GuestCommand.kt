@@ -7,7 +7,6 @@ import com.droiddeck.launcher.core.HostProcess
 import com.droiddeck.launcher.session.OrphanReaper
 import com.droiddeck.launcher.session.SessionFiles
 import com.droiddeck.launcher.session.SessionPaths
-import com.droiddeck.launcher.session.SessionPrefs
 import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -35,11 +34,9 @@ object GuestCommand {
         SessionFiles.stage(context, root)
         LinuxNetworkLinkComponent(context, root).publish()
         val runtimeDir = File(context.filesDir, ".flatpak-rt").apply { mkdirs() }
-        val cmd = LinuxRuntime.prootPrefix(context, root, "/root", fakeRoot)
-        if (linkDir != null) cmd.add(1, "--link2symlink")
+        val cmd = LinuxRuntime.chrootPrefix(context, root, "/root", fakeRoot)
         val binds = LinuxRuntime.binds(context, null, runtimeDir, Environment.getExternalStorageDirectory(), extraBinds)
         binds.forEach { cmd.add("-b"); cmd.add(it) }
-        val fastPathKey = if (fastPath && !fakeRoot && linkDir == null && ProotFastPath.enabled(context)) ProotFastPath.key(root, binds) else null
         cmd += listOf(
             "/usr/bin/env", "-i", "HOME=/root", "USER=root", "LANG=C.UTF-8",
             "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games", "XDG_RUNTIME_DIR=${LinuxRuntime.GUEST_RUNTIME_DIR}",
@@ -54,17 +51,8 @@ object GuestCommand {
                 "no_proxy=localhost,127.0.0.1,::1", "NO_PROXY=localhost,127.0.0.1,::1",
             )
         }
-        fastPathKey?.let { cmd += ProotFastPath.guestEnv(root, binds, it) }
         cmd += argv
         val builder = ProcessBuilder(cmd).directory(root).redirectErrorStream(true)
-        builder.environment().apply {
-            put("PROOT_LOADER", LinuxRuntime.prootLoader(context).path)
-            put("PROOT_TMP_DIR", LinuxRuntime.prootTempDir(context).path)
-            if (linkDir != null) put("PROOT_L2S_DIR", linkDir.path)
-            if (SessionPrefs.prootNoSeccomp(context)) put("PROOT_NO_SECCOMP", "1")
-            fastPathKey?.let { ProotFastPath.hostEnv(it).let { (k, v) -> put(k, v) } }
-            LinuxRuntime.prootLibraryPath(context).takeIf { it.isNotEmpty() }?.let { put("LD_LIBRARY_PATH", it) }
-        }
         if (cancelled?.get() == true) return 130
         val process = builder.start()
         val pid = HostProcess.pidOf(process)

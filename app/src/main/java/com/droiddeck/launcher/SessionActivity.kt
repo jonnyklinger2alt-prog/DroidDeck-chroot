@@ -2576,8 +2576,8 @@ class SessionActivity : ComponentActivity(), SurfaceHolder.Callback {
         }
     }
 
-    private fun prootFailureHint(): EndHint? {
-        if (SessionState.failureCode != "PROOT_MISSING") return null
+    private fun rootFailureHint(): EndHint? {
+        if (SessionState.failureCode != "ROOT_MISSING") return null
         val message = SessionState.failureMessage ?: return null
         return EndHint(message)
     }
@@ -2587,7 +2587,7 @@ class SessionActivity : ComponentActivity(), SurfaceHolder.Callback {
     }
 
     private fun sessionExitHint(status: Int): EndHint? = if (status == 0) presentationFaultHint()
-        else runtimeDamageHint() ?: sessionEndHint(SessionState.logFile) ?: prootFailureHint()
+        else runtimeDamageHint() ?: sessionEndHint(SessionState.logFile) ?: rootFailureHint()
 
     private fun sessionEndHint(log: File?): EndHint? {
         presentationFaultHint()?.let { return it }

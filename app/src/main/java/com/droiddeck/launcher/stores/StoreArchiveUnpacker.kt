@@ -59,7 +59,7 @@ internal class StoreArchiveUnpacker(
             else listOf(work.absolutePath)
         fun bsdtar(args: List<String>, onLine: (String) -> Unit) =
             GuestCommand.run(app, listOf("/usr/bin/bsdtar") + args, logName = logName, extraBinds = binds, fastPath = true, cancelled = cancelled) { line ->
-                if (!line.startsWith("proot ")) onLine(line)
+                if (!line.startsWith("chroot: ")) onLine(line)
             }
         var entries = 0L
         bsdtar(listOf("-tf", archive.absolutePath)) { entries++ }

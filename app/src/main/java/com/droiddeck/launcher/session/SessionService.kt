@@ -46,7 +46,6 @@ import com.droiddeck.launcher.input.SteamControllerBle
 import com.droiddeck.launcher.runtime.BwrapSpawner
 import com.droiddeck.launcher.runtime.LinuxNetworkLinkComponent
 import com.droiddeck.launcher.runtime.LinuxRuntime
-import com.droiddeck.launcher.runtime.ProotFastPath
 import com.droiddeck.launcher.runtime.UserApps
 import com.droiddeck.launcher.wayland.WaylandCompositor
 import java.io.File
@@ -474,7 +473,6 @@ class SessionService : Service() {
         val runtimeDir = File(filesDir, ".wayland-rt").apply { mkdirs() }
         killStragglers()
         val stillStarting = { gen == sessionGen && SessionState.running }
-        val prootPack = LinuxRuntime.patchedProot(this) || AddonPack.PROOT.await(this, stillStarting)
         val directAudioPack = AddonPack.DIRECTAUDIO.await(this, stillStarting)
         val systemVulkan = SystemVulkanDriver.usesDefault(SessionPrefs.linuxDriver(this))
         val powerVrPack = !systemVulkan || (stillStarting() && AddonPack.POWERVR.await(this, stillStarting))
@@ -495,16 +493,12 @@ class SessionService : Service() {
                 Toast.makeText(this, R.string.session_directaudio_missing, Toast.LENGTH_LONG).show()
             }
         }
-        if (!LinuxRuntime.patchedProot(this)) {
-            if (SessionPrefs.allowStockProot(this)) {
-                Log.w(TAG, "proot: patched proot missing; droiddeck-stock-proot allows the rootfs copy")
-            } else {
-                val message = getString(R.string.session_proot_missing)
-                Log.e(TAG, "$message (pack ready=$prootPack)")
-                failSession(gen, "PROOT_MISSING", message, -1)
-                stopSession(-1, gen)
-                return
-            }
+        if (!com.droiddeck.launcher.runtime.ChrootLauncher.rootAvailable()) {
+            val message = getString(R.string.session_root_missing)
+            Log.e(TAG, message)
+            failSession(gen, "ROOT_MISSING", message, -1)
+            stopSession(-1, gen)
+            return
         }
         val agentEnvironment = runCatching { com.droiddeck.launcher.agent.AgentEnv.beginSession(this) }
             .onFailure { Log.w(TAG, "agent environment skipped", it) }
@@ -540,10 +534,10 @@ class SessionService : Service() {
             return
         }
         val sessionLog = File(sessionDir, "session.log")
-        val prootLine = "== proot: ${LinuxRuntime.prootBinary(this).path} (${LinuxRuntime.prootSource(this)})"
-        Log.i(TAG, prootLine)
-        runCatching { sessionLog.appendText(prootLine + "\n") }
-            .onFailure { Log.w(TAG, "could not write the proot line to ${sessionLog.path}", it) }
+        val chrootLine = "== chroot: ${com.droiddeck.launcher.runtime.ChrootLauncher.script(this).path}"
+        Log.i(TAG, chrootLine)
+        runCatching { sessionLog.appendText(chrootLine + "\n") }
+            .onFailure { Log.w(TAG, "could not write the chroot line to ${sessionLog.path}", it) }
 
         Log.i(TAG, GpuClockPin.start(this))
         Log.i(TAG, GameThreadHints.start(this))
@@ -568,7 +562,6 @@ class SessionService : Service() {
             return
         }
         if (steamHere) guest.add("BL_EPIC_APP_ID=" + com.droiddeck.launcher.stores.epic.EpicClient.shortcutAppId)
-        val fastPathAt = guest.size
 
         val pulse = startAudio(guest, sessionDir, directAudioPack)
         startVkBridge(guest, sessionDir)
@@ -665,39 +658,11 @@ class SessionService : Service() {
         FileUtils.clear(File(LinuxRuntime.liveDir(this), "shm"))
 
         val binds = sessionBinds(controllersOn, fakeInputDir, sessionDir, guest, sessionRoot, runtimeDir)
-        val fastPathKey = if (ProotFastPath.enabled(this)) {
-            val prootBinds = LinuxRuntime.binds(
-                this, sessionRoot, runtimeDir, Environment.getExternalStorageDirectory(), binds,
-            )
-            val root = LinuxRuntime.rootDir(this)
-            ProotFastPath.key(root, prootBinds)?.also { key ->
-                val env = ProotFastPath.guestEnv(root, prootBinds, key)
-                guest.addAll(fastPathAt, env)
-                shellGuest.addAll(fastPathAt, env)
-                Log.i(TAG, "proot: fast path on (${prootBinds.size} binds)")
-            } ?: run {
-                Log.w(TAG, "proot: fast path off - ${prootBinds.size} binds (it holds ${ProotFastPath.MAX_BINDS}) or a path it cannot be told")
-                null
-            }
-        } else null
-
         val command = LinuxRuntime.command(
             this, sessionRoot, runtimeDir, Environment.getExternalStorageDirectory(), binds, guest,
         )
 
         val hostEnv = HostEnvironment()
-        hostEnv["PROOT_LOADER"] = LinuxRuntime.prootLoader(this).path
-        hostEnv["PROOT_TMP_DIR"] = LinuxRuntime.prootTempDir(this).path
-        if (SessionPrefs.prootNoSeccomp(this)) {
-            hostEnv["PROOT_NO_SECCOMP"] = "1"
-            Log.i(TAG, "proot: seccomp acceleration off by request")
-        }
-        fastPathKey?.let { ProotFastPath.hostEnv(it).let { (k, v) -> hostEnv[k] = v } }
-        for (key in listOf("PROOT_PROFILE", "PROOT_PROFILE_SLOW_US")) {
-            guest.lastOrNull { it.startsWith("$key=") }?.substringAfter('=')?.let { hostEnv[key] = it }
-        }
-        val prootLibs = LinuxRuntime.prootLibraryPath(this)
-        if (prootLibs.isNotEmpty()) hostEnv["LD_LIBRARY_PATH"] = prootLibs
 
         val terminalCommand = LinuxRuntime.command(
             this, sessionRoot, runtimeDir, Environment.getExternalStorageDirectory(), binds, shellGuest,
@@ -709,9 +674,8 @@ class SessionService : Service() {
         }
         if (gen == sessionGen && SessionState.running) {
             SessionTerminal.prepare(terminalCommand, terminalHostEnvironment.map { (key, value) -> "$key=$value" }.toTypedArray(), root, gen)
-            val (fastPathName, _) = ProotFastPath.hostEnv("")
             BottomDesktop.prepare(desktopGuest, binds, sessionRoot,
-                hostEnv.asArray().filterNot { it.startsWith("$fastPathName=") }.toTypedArray(), root, sessionDir, gen,
+                hostEnv.asArray(), root, sessionDir, gen,
             ) { gen == sessionGen && SessionState.running }
         }
 
@@ -757,7 +721,7 @@ class SessionService : Service() {
             val program = programStatus(sessionRoot)
             Log.i(TAG, "session ended: $status" + if (program != null) " (program $program)" else "")
             stopSession(program ?: status ?: -1, gen)
-        }, null, sessionLog.takeIf { "PROOT_PROFILE=1" in hostEnv.asArray() })
+        }, null, null)
         Log.i(TAG, "session pid $pid, log ${sessionLog.path}")
         if (gen != sessionGen || !SessionState.running) {
             Log.i(TAG, "session stopped while its guest was starting; taking it down")
@@ -1228,9 +1192,7 @@ class SessionService : Service() {
         if (storageDiagnosticLibrary != null && library != null) libraries.add(SecondaryLibrary.CARD_GUESTS[0] to library.label)
         val gamesLibraries = GameStorage.gamesFolderLibraries(this)
         if (gamesLibraries.isNotEmpty()) {
-            var room = if (ProotFastPath.enabled(this)) {
-                ProotFastPath.MAX_BINDS - LinuxRuntime.binds(this, sessionRoot, runtimeDir, Environment.getExternalStorageDirectory(), binds).size
-            } else Int.MAX_VALUE
+            var room = Int.MAX_VALUE
             for (games in gamesLibraries) {
                 if (games.host.path + ":" + games.guest !in binds) continue
                 val problem = GameStorage.prepare(this, games.host.path)
@@ -1241,7 +1203,7 @@ class SessionService : Service() {
                 try {
                     val extra = SecondaryLibrary.binds(filesDir, games.host, listOf(games.guest)).drop(1)
                     if (extra.size > room) {
-                        Log.w(TAG, "steam library: ${games.host} needs ${extra.size} binds, $room left for the fast path; not a library this session")
+                        Log.w(TAG, "steam library: ${games.host} needs ${extra.size} binds, $room left; not a library this session")
                         continue
                     }
                     binds.addAll(extra)
@@ -1270,13 +1232,11 @@ class SessionService : Service() {
                 continue
             }
             try {
-                val room = if (ProotFastPath.enabled(this)) {
-                    ProotFastPath.MAX_BINDS - LinuxRuntime.binds(this, sessionRoot, runtimeDir, Environment.getExternalStorageDirectory(), binds).size
-                } else Int.MAX_VALUE
+                val room = Int.MAX_VALUE
                 val content = SecondaryLibrary.contentPath(entry.host)
                 val extra = SecondaryLibrary.binds(filesDir, entry.host, listOf(entry.guest), content = content)
                 if (extra.size > room) {
-                    Log.w(TAG, "added steam library: ${entry.path} needs ${extra.size} binds, $room left for the fast path; not a library this session")
+                    Log.w(TAG, "added steam library: ${entry.path} needs ${extra.size} binds, $room left; not a library this session")
                     continue
                 }
                 File(LinuxRuntime.rootDir(this), entry.guest.removePrefix("/")).mkdirs()
@@ -1299,12 +1259,10 @@ class SessionService : Service() {
             if (problem != null) {
                 Log.w(TAG, "x86-64 steam library: $problem")
             } else try {
-                val room = if (ProotFastPath.enabled(this)) {
-                    ProotFastPath.MAX_BINDS - LinuxRuntime.binds(this, sessionRoot, runtimeDir, Environment.getExternalStorageDirectory(), binds).size
-                } else Int.MAX_VALUE
+                val room = Int.MAX_VALUE
                 val extra = SecondaryLibrary.binds(filesDir, x64, listOf(GameStorage.X64_CARD_GUEST)).drop(1)
                 if (extra.size > room) {
-                    Log.w(TAG, "x86-64 steam library: $x64 needs ${extra.size} binds, $room left for the fast path; not a library this session")
+                    Log.w(TAG, "x86-64 steam library: $x64 needs ${extra.size} binds, $room left; not a library this session")
                 } else {
                     binds.addAll(extra)
                     x64Libraries.put(org.json.JSONObject().put("path", GameStorage.X64_CARD_GUEST).put("label", library.label.replace('"', ' ').replace('\\', ' ')))
@@ -1321,12 +1279,10 @@ class SessionService : Service() {
                 continue
             }
             try {
-                val room = if (ProotFastPath.enabled(this)) {
-                    ProotFastPath.MAX_BINDS - LinuxRuntime.binds(this, sessionRoot, runtimeDir, Environment.getExternalStorageDirectory(), binds).size
-                } else Int.MAX_VALUE
+                val room = Int.MAX_VALUE
                 val extra = SecondaryLibrary.binds(filesDir, entry.x64Host, listOf(entry.x64Guest)).drop(1)
                 if (extra.size > room) {
-                    Log.w(TAG, "x86-64 steam library: ${entry.x64Host} needs ${extra.size} binds, $room left for the fast path; not a library this session")
+                    Log.w(TAG, "x86-64 steam library: ${entry.x64Host} needs ${extra.size} binds, $room left; not a library this session")
                     continue
                 }
                 binds.addAll(extra)
@@ -1356,17 +1312,17 @@ class SessionService : Service() {
         return binds
     }
 
-    private fun teardown(prootPid: Int, expectedStartTime: Long? = null) {
-        fun stillSameProcess(): Boolean = expectedStartTime == null || readStat(prootPid)?.second == expectedStartTime
+    private fun teardown(launcherPid: Int, expectedStartTime: Long? = null) {
+        fun stillSameProcess(): Boolean = expectedStartTime == null || readStat(launcherPid)?.second == expectedStartTime
         if (!stillSameProcess()) return
-        val tree = descendants(prootPid)
+        val tree = descendants(launcherPid)
         if (!stillSameProcess()) return
         saveWineRegistries(tree)
-        android.os.Process.sendSignal(prootPid, 15)
-        if (!waitForExit(prootPid, GRACE_MS)) {
+        android.os.Process.sendSignal(launcherPid, 15)
+        if (!waitForExit(launcherPid, GRACE_MS)) {
             if (!stillSameProcess()) return
-            Log.w(TAG, "proot $prootPid did not exit on SIGTERM; killing it")
-            android.os.Process.killProcess(prootPid)
+            Log.w(TAG, "chroot launcher $launcherPid did not exit on SIGTERM; killing it")
+            android.os.Process.killProcess(launcherPid)
         }
         var killed = 0
         for ((pid, started) in tree) {
@@ -1375,7 +1331,7 @@ class SessionService : Service() {
             android.os.Process.killProcess(pid)
             killed++
         }
-        if (killed > 0) Log.i(TAG, "swept $killed process(es) proot left behind")
+        if (killed > 0) Log.i(TAG, "swept $killed process(es) the chroot left behind")
     }
 
     private fun clearCachedApps() {
@@ -1435,8 +1391,8 @@ class SessionService : Service() {
         return try { Pair(fields[1].toInt(), fields[19].toLong()) } catch (e: NumberFormatException) { null }
     }
 
-    private fun askSteamToExit(prootPid: Int) {
-        if (!File("/proc/$prootPid").exists()) return
+    private fun askSteamToExit(launcherPid: Int) {
+        if (!File("/proc/$launcherPid").exists()) return
         val request = File(LinuxRuntime.sessionRoot(this), "steam-stop")
         try {
             request.writeText("")
@@ -1445,11 +1401,11 @@ class SessionService : Service() {
             return
         }
         val started = System.currentTimeMillis()
-        if (waitForExit(prootPid, STEAM_PICKUP_MS) || request.exists()) {
+        if (waitForExit(launcherPid, STEAM_PICKUP_MS) || request.exists()) {
             request.delete()
             return
         }
-        val exited = waitForExit(prootPid, STEAM_EXIT_MS)
+        val exited = waitForExit(launcherPid, STEAM_EXIT_MS)
         Log.i(TAG, "Steam client ${if (exited) "exited" else "did not exit"} after ${System.currentTimeMillis() - started} ms")
     }
 
@@ -1596,7 +1552,7 @@ class SessionService : Service() {
             android.os.Process.killProcess(pid)
             killed++
         }
-        if (killed > 0) Log.w(TAG, "killed $killed guest process(es) proot no longer tracked")
+        if (killed > 0) Log.w(TAG, "killed $killed guest process(es) the chroot launcher no longer tracked")
     }
 
     private fun killStragglers() {
@@ -2003,7 +1959,7 @@ class SessionService : Service() {
                 Log.w(TAG, "tracer priority", t)
                 return@Thread
             }
-            Log.i(TAG, "proot tracer $pid: nice $nice (asked for $TRACER_NICE)")
+            Log.i(TAG, "chroot launcher $pid: nice $nice (asked for $TRACER_NICE)")
         }, "tracer-priority").start()
     }
 
@@ -2050,7 +2006,7 @@ class SessionService : Service() {
         launchWatcher = null
         syncWatcher?.stopWatching()
         syncWatcher = null
-        val prootPid = sessionPid
+        val launcherPid = sessionPid
         sessionPid = -1
         val auxiliary = synchronized(auxiliaryProcessesLock) {
             auxiliaryProcesses.toMap().also { auxiliaryProcesses.clear() }
@@ -2077,12 +2033,12 @@ class SessionService : Service() {
         com.droiddeck.launcher.input.SteamTouchDevice.release()
         val steamClientMayRun = SessionState.mode == MODE_STEAM || SessionState.mode == MODE_DESKTOP
         val finishAfterTeardown: () -> Unit = {
-            if (prootPid > 1 || auxiliary.isNotEmpty()) {
+            if (launcherPid > 1 || auxiliary.isNotEmpty()) {
                 Thread({
-                    if (prootPid > 1 && steamClientMayRun) askSteamToExit(prootPid)
+                    if (launcherPid > 1 && steamClientMayRun) askSteamToExit(launcherPid)
                     com.droiddeck.launcher.stores.gog.GogComet.end(stoppedSession)
                     auxiliary.forEach { (pid, started) -> teardown(pid, started) }
-                    if (prootPid > 1) teardown(prootPid)
+                    if (launcherPid > 1) teardown(launcherPid)
                     killGuestLeftovers()
                     pruneSystemVulkanRuntime()
                     finishSessionStop(status, stoppedGen, collectEnded)
@@ -2097,7 +2053,7 @@ class SessionService : Service() {
                 }, "gog-session-stop").start()
             }
         }
-        if (prootPid > 1) acquireLocks()
+        if (launcherPid > 1) acquireLocks()
         if (controller != null) controller.closeAndResume(finishAfterTeardown) else finishAfterTeardown()
     }
 
@@ -2379,7 +2335,7 @@ class SessionService : Service() {
         private const val ACTION_AUXILIARY_EXITED = "com.droiddeck.launcher.AUXILIARY_EXITED"
         private const val EXTRA_AUXILIARY_PID = "auxiliaryPid"
         private val STRAGGLERS = listOf("droiddeck-session", "gamescope", "Xwayland", "steamrtarm64",
-            "steamwebhelper", "linuxfs/opt/android-host/proot", "/libproot.so", "pulseaudio/libpulseaudio.so")
+            "steamwebhelper", "chroot/launch.sh", "pulseaudio/libpulseaudio.so")
         private const val GRACE_MS = 1200L
         private const val WINE_SAVE_MS = 3000L
         private const val STEAM_PICKUP_MS = 1500L

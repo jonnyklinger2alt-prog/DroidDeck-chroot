@@ -181,17 +181,6 @@ fun PerformancePage(
                 fastSync, onChange = onFastSync,
             )
             ToggleRow(
-                host, "seccomp", stringResource(R.string.perf_seccomp),
-                stringResource(R.string.perf_seccomp_hint),
-                prootNoSeccomp, onChange = onProotNoSeccomp,
-            )
-            ToggleRow(
-                host, "fastpath", stringResource(R.string.perf_fastpath),
-                if (prootNoSeccomp) stringResource(R.string.perf_fastpath_needs_seccomp)
-                else stringResource(R.string.perf_fastpath_hint),
-                prootFastPath && !prootNoSeccomp, enabled = !prootNoSeccomp, onChange = onProotFastPath,
-            )
-            ToggleRow(
                 host, "cursorcomposite", stringResource(R.string.perf_cursor_composite),
                 stringResource(R.string.perf_cursor_composite_hint),
                 cursorComposite, onChange = onCursorComposite,

@@ -1,12 +1,10 @@
 package com.droiddeck.launcher.runtime;
 
-import com.droiddeck.launcher.core.AddonPack;
 import android.content.Context;
 import android.os.Process;
 import android.system.ErrnoException;
 import android.system.Os;
 import android.system.StructStat;
-import android.system.StructUtsname;
 import com.droiddeck.launcher.gpu.SystemVulkanDriver;
 import com.droiddeck.launcher.session.SessionPrefs;
 
@@ -57,60 +55,8 @@ public final class LinuxRuntime {
         return dir;
     }
 
-    public static File prootTempDir(Context context) {
-        File dir = new File(liveDir(context), "proot");
-        dir.mkdirs();
-        return dir;
-    }
-
-    private static final String HOST_DIR = "opt/android-host";
-    public static final String PROOT_PACK = "add-on pack";
-    public static final String PROOT_ROOTFS = "rootfs fallback";
-    public static final String PROOT_MISSING = "missing";
-
-    private static File rootfsProot(Context context) {
-        return new File(rootDir(context), HOST_DIR + "/proot");
-    }
-
-    private static File rootfsLoader(Context context) {
-        return new File(rootDir(context), HOST_DIR + "/loader");
-    }
-
-    private static boolean rootfsProotReady(Context context) {
-        return rootfsProot(context).isFile() && rootfsLoader(context).isFile();
-    }
-
-    public static boolean patchedProot(Context context) {
-        return AddonPack.PROOT.installed(context);
-    }
-
-    public static File prootBinary(Context context) {
-        if (AddonPack.PROOT.installed(context)) return AddonPack.PROOT.file(context, "libproot.so");
-        if (SessionPrefs.allowStockProot(context)) return rootfsProot(context);
-        return AddonPack.PROOT.file(context, "libproot.so");
-    }
-
-    public static File prootLoader(Context context) {
-        if (AddonPack.PROOT.installed(context)) return AddonPack.PROOT.file(context, "libproot-loader.so");
-        if (SessionPrefs.allowStockProot(context)) return rootfsLoader(context);
-        return AddonPack.PROOT.file(context, "libproot-loader.so");
-    }
-
-    public static String prootSource(Context context) {
-        File bin = prootBinary(context);
-        if (!bin.isFile()) return PROOT_MISSING;
-        if (AddonPack.PROOT.installed(context)
-                && bin.getPath().equals(AddonPack.PROOT.file(context, "libproot.so").getPath())) return PROOT_PACK;
-        return PROOT_ROOTFS;
-    }
-
-    public static String prootLibraryPath(Context context) {
-        File dir = new File(rootDir(context), HOST_DIR);
-        return dir.equals(prootBinary(context).getParentFile()) ? dir.getPath() : "";
-    }
-
     public static boolean isInstalled(Context context) {
-        return hasRootfs(context) && (patchedProot(context) || rootfsProotReady(context));
+        return hasRootfs(context);
     }
 
     public static boolean hasRootfs(Context context) {
@@ -147,7 +93,7 @@ public final class LinuxRuntime {
 
     public static List<String> commandWithBinds(Context context, File root, List<String> binds,
                                                 List<String> guestCommand) {
-        List<String> cmd = prootPrefix(context, root, "/root");
+        List<String> cmd = chrootPrefix(context, root, "/root");
         for (String spec : binds) bind(cmd, spec);
         cmd.addAll(guestCommand);
         return cmd;
@@ -161,27 +107,42 @@ public final class LinuxRuntime {
         return binds(context, null, null, android.os.Environment.getExternalStorageDirectory(), null);
     }
 
-    public static List<String> prootPrefix(Context context, File root, String cwd) {
-        return prootPrefix(context, root, cwd, false);
+    public static List<String> chrootPrefix(Context context, File root, String cwd) {
+        return chrootPrefix(context, root, cwd, false);
     }
 
-    public static List<String> prootPrefix(Context context, File root, String cwd, boolean fakeRoot) {
-        List<String> cmd = new ArrayList<>();
-        cmd.add(prootBinary(context).getPath());
-        cmd.add("--kill-on-exit");
-        cmd.add("--kernel-release=" + guestUtsname(SessionPrefs.guestHostname(context)));
-        int uid = Process.myUid();
-        if (fakeRoot) {
-            cmd.add("-0");
-        } else {
-            cmd.add("-i");
-            cmd.add(uid + ":" + uid);
-        }
-        cmd.add("-r");
+    public static List<String> chrootPrefix(Context context, File root, String cwd, boolean fakeRoot) {
+        List<String> cmd = ChrootLauncher.prefix(context);
+        cmd.add("--root");
         cmd.add(root.getPath());
-        cmd.add("-w");
+        cmd.add("--cwd");
         cmd.add(cwd);
+        cmd.add("--uid");
+        cmd.add(Integer.toString(Process.myUid()));
+        cmd.add("--gid");
+        cmd.add(Integer.toString(Os.getgid()));
+        String groups = supplementaryGroups();
+        if (!groups.isEmpty()) {
+            cmd.add("--groups");
+            cmd.add(groups);
+        }
+        String hostname = SessionPrefs.guestHostname(context);
+        if (hostname != null && !hostname.isEmpty()) {
+            cmd.add("--hostname");
+            cmd.add(hostname);
+        }
+        if (fakeRoot) cmd.add("--fake-root");
         return cmd;
+    }
+
+    private static String supplementaryGroups() {
+        try {
+            for (String line : Files.readAllLines(new File("/proc/self/status").toPath(), StandardCharsets.US_ASCII)) {
+                if (line.startsWith("Groups:")) return String.join(",", line.substring(7).trim().split("\\s+"));
+            }
+        } catch (IOException ignored) {
+        }
+        return "";
     }
 
     public static List<String> binds(Context context, File sessionRoot, File runtimeDir,
@@ -542,12 +503,6 @@ public final class LinuxRuntime {
     private static void bind(List<String> cmd, String spec) {
         cmd.add("-b");
         cmd.add(spec);
-    }
-
-    static String guestUtsname(String hostname) {
-        StructUtsname host = Os.uname();
-        return "\\" + host.sysname + "\\" + hostname + "\\" + host.release
-                + "\\" + host.version + "\\" + host.machine + "\\localdomain\\-1\\";
     }
 
     public static synchronized void writeAccounts(Context context) throws IOException {

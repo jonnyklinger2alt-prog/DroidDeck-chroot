@@ -40,7 +40,7 @@ class LinuxRuntimeLiveFilesTest {
         val binds = LinuxRuntime.binds(context, null, null, null, null)
         val shm = File(binds.single { it.endsWith(":/dev/shm") }.removeSuffix(":/dev/shm"))
         val live = LinuxRuntime.liveDir(context)
-        val files = listOf(File(shm, "steamvr-ipc"), File(LinuxRuntime.prootTempDir(context), "loader"),
+        val files = listOf(File(shm, "steamvr-ipc"), File(live, "chroot/launch.sh"),
             File(live, "drm/device"), File(live, "bwrap/1/state"))
         files.forEach { it.parentFile!!.mkdirs(); it.writeText("active") }
         val disposable = File(context.cacheDir, "download").apply { writeText("cached") }

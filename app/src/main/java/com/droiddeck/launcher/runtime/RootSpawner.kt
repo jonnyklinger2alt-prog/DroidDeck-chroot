@@ -8,7 +8,6 @@ import android.os.Process
 import android.util.Log
 import com.droiddeck.launcher.core.HostProcess
 import com.droiddeck.launcher.session.OrphanReaper
-import com.droiddeck.launcher.session.SessionPrefs
 import org.json.JSONObject
 import java.io.DataInputStream
 import java.io.DataOutputStream
@@ -113,8 +112,7 @@ object RootSpawner {
         val argv = request.getJSONArray("argv").let { a -> (0 until a.length()).map { a.getString(it) } }
         if (argv.isEmpty()) throw IOException("no command")
         val cwd = request.optString("cwd", "/root").ifEmpty { "/root" }
-        val cmd = LinuxRuntime.prootPrefix(context, root, cwd, true)
-        cmd.add(1, "--link2symlink")
+        val cmd = LinuxRuntime.chrootPrefix(context, root, cwd, true)
         LinuxRuntime.lastBinds(context).filterNot { it.startsWith("/proc/self/fd/") }.forEach { cmd.add("-b"); cmd.add(it) }
         cmd.add("/usr/bin/env")
         cmd.add("-i")
@@ -123,10 +121,7 @@ object RootSpawner {
         val builder = ProcessBuilder(cmd).directory(root)
         builder.environment().apply {
             clear()
-            put("PROOT_LOADER", LinuxRuntime.prootLoader(context).path)
-            put("PROOT_TMP_DIR", LinuxRuntime.prootTempDir(context).path)
-            if (SessionPrefs.prootNoSeccomp(context)) put("PROOT_NO_SECCOMP", "1")
-            LinuxRuntime.prootLibraryPath(context).takeIf { it.isNotEmpty() }?.let { put("LD_LIBRARY_PATH", it) }
+            put("PATH", System.getenv("PATH") ?: "/system/bin")
         }
         val streams = listOf(stdio(fds.getOrNull(0), false), stdio(fds.getOrNull(1), true), stdio(fds.getOrNull(2), true))
         try {

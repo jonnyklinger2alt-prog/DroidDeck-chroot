@@ -9,7 +9,6 @@ import androidx.compose.runtime.setValue
 import com.droiddeck.launcher.core.AddonPack
 import com.droiddeck.launcher.runtime.LinuxRuntime
 import com.droiddeck.launcher.session.SessionEvents
-import com.droiddeck.launcher.session.SessionPrefs
 import com.droiddeck.launcher.session.SessionState
 import com.droiddeck.launcher.stores.Store
 import com.droiddeck.launcher.stores.AchievementNotifications
@@ -144,10 +143,6 @@ object GogComet {
         val pb = ProcessBuilder(command).redirectErrorStream(true)
         pb.environment().apply {
             remove("LD_PRELOAD"); remove("LD_AUDIT"); remove("LD_LIBRARY_PATH")
-            put("PROOT_LOADER", LinuxRuntime.prootLoader(context).path)
-            put("PROOT_TMP_DIR", LinuxRuntime.prootTempDir(context).path)
-            if (SessionPrefs.prootNoSeccomp(context)) put("PROOT_NO_SECCOMP", "1")
-            LinuxRuntime.prootLibraryPath(context).takeIf { it.isNotEmpty() }?.let { put("LD_LIBRARY_PATH", it) }
         }
         try {
             val child = pb.start()

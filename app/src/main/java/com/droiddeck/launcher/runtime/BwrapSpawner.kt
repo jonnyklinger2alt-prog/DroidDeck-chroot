@@ -9,7 +9,6 @@ import android.util.Base64
 import android.util.Log
 import com.droiddeck.launcher.core.FileUtils
 import com.droiddeck.launcher.core.HostProcess
-import com.droiddeck.launcher.session.SessionPrefs
 import org.json.JSONObject
 import java.io.DataInputStream
 import java.io.DataOutputStream
@@ -348,9 +347,8 @@ object BwrapSpawner {
     }
 
     private fun run(context: Context, plan: Plan, client: LocalSocket, out: DataOutputStream, id: Int) {
-        val cmd = LinuxRuntime.prootPrefix(context, plan.root, plan.cwd)
-        val verbose = plan.env["DROIDDECK_PROOT_VERBOSE"]?.toIntOrNull()
-        if (verbose != null) { cmd.add(1, "-v"); cmd.add(2, verbose.toString()) }
+        val cmd = LinuxRuntime.chrootPrefix(context, plan.root, plan.cwd)
+        val verbose = plan.env["DROIDDECK_CHROOT_VERBOSE"]?.toIntOrNull()
         plan.binds.forEach { cmd.add("-b"); cmd.add(it.spec) }
         cmd.add(plan.envTool)
         cmd.add("-i")
@@ -359,10 +357,7 @@ object BwrapSpawner {
         val builder = ProcessBuilder(cmd).redirectErrorStream(true).directory(plan.root)
         builder.environment().apply {
             clear()
-            put("PROOT_LOADER", LinuxRuntime.prootLoader(context).path)
-            put("PROOT_TMP_DIR", LinuxRuntime.prootTempDir(context).path)
-            if (SessionPrefs.prootNoSeccomp(context)) put("PROOT_NO_SECCOMP", "1")
-            LinuxRuntime.prootLibraryPath(context).takeIf { it.isNotEmpty() }?.let { put("LD_LIBRARY_PATH", it) }
+            put("PATH", System.getenv("PATH") ?: "/system/bin")
         }
         val process = builder.start()
         val pid = HostProcess.pidOf(process)

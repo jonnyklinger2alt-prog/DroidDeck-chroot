@@ -331,7 +331,7 @@ object BottomDesktop {
                     guestGeneration++
                     setState(if (state == State.RUNNING || status == 0) State.ENDED else State.FAILED)
                 }
-            }, null, File(dir, "proot.log"))
+            }, null, File(dir, "chroot.log"))
             main.post {
                 if (generation != guestGeneration || launch !== current) {
                     if (pid > 1) SessionService.stopTerminalProcess(context, pid)

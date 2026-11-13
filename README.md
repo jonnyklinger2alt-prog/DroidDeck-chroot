@@ -1,6 +1,6 @@
 THIS IS NOT THE OFFICIAL PROJECT THIS IS A FORK WITH CHROOT IMPLEMENTED INSTEAD OF PROOT AND REQUIRES ROOT!!!
 
-Status: not started.
+Status: the Linux runtime now starts through a root chroot launcher (`app/src/main/assets/chroot/launch.sh`) via `su` instead of proot. Not yet tested on a device.
 
 <p align="center">
   <picture>
