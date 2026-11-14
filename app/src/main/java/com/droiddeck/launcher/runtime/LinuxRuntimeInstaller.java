@@ -664,6 +664,7 @@ public final class LinuxRuntimeInstaller {
     }
 
     private static final String L2S = ".l2s.";
+    static final String L2S_HARDLINKED = "etc/droiddeck/.l2s-hardlinked";
 
     static boolean l2sLink(File target, File link) {
         return l2sLink(target, link, null, null);
@@ -708,6 +709,7 @@ public final class LinuxRuntimeInstaller {
             }
             Files.deleteIfExists(link.toPath());
             Files.createSymbolicLink(link.toPath(), shown.apply(intermediate));
+            if (tree != null) Files.deleteIfExists(new File(tree, L2S_HARDLINKED).toPath());
             return true;
         } catch (IOException | RuntimeException e) {
             Log.w(TAG, "l2s link " + link + " -> " + target + ": " + e);

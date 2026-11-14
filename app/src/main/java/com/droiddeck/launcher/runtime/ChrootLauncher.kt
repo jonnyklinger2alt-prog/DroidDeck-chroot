@@ -31,15 +31,19 @@ object ChrootLauncher {
     @JvmStatic
     fun prefix(context: Context): MutableList<String> = mutableListOf(SHELL, script(context).path)
 
+    private val SU = listOf("su", "/system/bin/su", "/system/xbin/su", "/debug_ramdisk/su", "/sbin/su", "/su/bin/su")
+
     @JvmStatic
     fun rootAvailable(): Boolean {
         rootChecked?.let { if (it) return true }
-        val ok = try {
-            val process = ProcessBuilder("su", "-p", "-c", "id -u").redirectErrorStream(true).start()
-            val out = process.inputStream.bufferedReader().readText().trim()
-            process.waitFor(30, TimeUnit.SECONDS) && process.exitValue() == 0 && out.lines().lastOrNull() == "0"
-        } catch (e: Exception) {
-            false
+        val ok = SU.any { su ->
+            try {
+                val process = ProcessBuilder(su, "-c", "id -u").redirectErrorStream(true).start()
+                val out = process.inputStream.bufferedReader().readText().trim()
+                process.waitFor(30, TimeUnit.SECONDS) && process.exitValue() == 0 && out.lines().lastOrNull() == "0"
+            } catch (e: Exception) {
+                false
+            }
         }
         rootChecked = ok
         return ok

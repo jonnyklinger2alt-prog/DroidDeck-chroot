@@ -5,20 +5,49 @@ quote() {
     printf "'%s'" "$(printf '%s' "$1" | sed "s/'/'\\\\''/g")"
 }
 
+find_su() {
+    command -v su && return
+    for candidate in /system/bin/su /system/xbin/su /debug_ramdisk/su /sbin/su /su/bin/su; do
+        [ -e "$candidate" ] && { echo "$candidate"; return; }
+    done
+    echo su
+}
+
 if [ "$1" != "--as-root" ] && [ "$1" != "--in-ns" ]; then
     if [ "$(id -u)" = 0 ]; then
-        exec /system/bin/sh "$self" --as-root "$PPID" "$@"
+        exec /system/bin/sh "$self" --as-root "$PPID" "" "$@"
     fi
+    # Not every root manager's su keeps the caller's environment, so it travels in a private file.
+    umask 077
+    envfile="${self%/*}/env.$$"
+    export -p >"$envfile"
     args=""
     for a in "$@"; do args="$args $(quote "$a")"; done
-    exec su -p -c "exec /system/bin/sh $(quote "$self") --as-root $$$args"
+    exec "$(find_su)" -c "exec /system/bin/sh $(quote "$self") --as-root $$ $(quote "$envfile")$args"
 fi
 
 phase="$1"
 shift
 if [ "$phase" = --as-root ]; then
+    umask 022
     caller="$1"
-    shift
+    envfile="$2"
+    shift 2
+    if [ -n "$envfile" ]; then
+        while IFS= read -r line; do
+            case "$line" in
+                "export "*=*) entry=${line#export } ;;
+                "typeset -x "*=*) entry=${line#typeset -x } ;;
+                *) continue ;;
+            esac
+            name=${entry%%=*}
+            case "$name" in
+                ''|*[!A-Za-z0-9_]*|[0-9]*|_|PPID|PWD|OLDPWD|SHLVL|RANDOM|SECONDS|LINENO) continue ;;
+            esac
+            eval "export $entry" 2>/dev/null
+        done <"$envfile"
+        rm -f "$envfile"
+    fi
 fi
 pidns="$PIDNS"
 
@@ -46,17 +75,66 @@ if [ -z "$root" ] || [ ! -d "$root" ]; then
     exit 127
 fi
 
+bb=
+for candidate in "$BUSYBOX" /data/adb/magisk/busybox /data/adb/ksu/bin/busybox /data/adb/ap/bin/busybox \
+        "$(command -v busybox)"; do
+    [ -n "$candidate" ] && [ -x "$candidate" ] && { bb="$candidate"; break; }
+done
+mnt() {
+    if [ -n "$bb" ]; then "$bb" mount "$@"; else mount "$@"; fi
+}
+
+l2s_path() {
+    case "$2" in
+        */files/linuxfs/*) echo "$root/${2#*/files/linuxfs/}" ;;
+        /*) echo "$root$2" ;;
+        *) echo "$1/$2" ;;
+    esac
+}
+
+# The installer stands in for hard links Android refuses an app with proot's link2symlink layout;
+# outside proot multi-call binaries see the .l2s names, so turn them back into real hard links.
+hardlink_l2s() {
+    marker="$root/etc/droiddeck/.l2s-hardlinked"
+    lock="$root/etc/droiddeck/.l2s-lock"
+    [ -e "$marker" ] && return
+    mkdir -p "$root/etc/droiddeck"
+    waited=0
+    until mkdir "$lock" 2>/dev/null; do
+        [ -e "$marker" ] && return
+        [ $waited -ge 120 ] && break
+        sleep 1
+        waited=$((waited + 1))
+    done
+    if [ ! -e "$marker" ]; then
+        find "$root" -xdev -type l ! -name '.l2s.*' 2>/dev/null | while IFS= read -r link; do
+            to=$(readlink "$link")
+            case "${to##*/}" in .l2s.*) ;; *) continue ;; esac
+            mid=$(l2s_path "${link%/*}" "$to")
+            [ -L "$mid" ] || continue
+            data=$(l2s_path "${mid%/*}" "$(readlink "$mid")")
+            [ -f "$data" ] && [ ! -L "$data" ] || continue
+            ln -f "$data" "$link.dd-l2s" && mv -f "$link.dd-l2s" "$link" || say "cannot hard link $link"
+        done
+        find "$root" -xdev -name '.l2s.*' -type l -exec rm -f {} + 2>/dev/null
+        find "$root" -xdev -name '.l2s.*' -type f -links +1 -exec rm -f {} + 2>/dev/null
+        touch "$marker" && chown "$uid:$gid" "$marker"
+    fi
+    rmdir "$lock" 2>/dev/null
+}
+
 if [ "$phase" = --as-root ]; then
-    for tool in unshare mount chroot; do
+    for tool in unshare chroot; do
         command -v "$tool" >/dev/null || say "the host has no $tool"
     done
+    hardlink_l2s
     set -- --root "$root" --cwd "$cwd" --uid "$uid" --gid "$gid" --groups "$groups" --hostname "$hostname" --log "$log" "$@"
     [ "$fake" = 1 ] && set -- --fake-root "$@"
     exec 3<&0
     if unshare -m -p -f -u true 2>/dev/null; then
-        PIDNS=1 unshare -m -p -f -u /system/bin/sh "$self" --in-ns "$@" <&3 3<&- &
+        BUSYBOX="$bb" PIDNS=1 unshare -m -p -f -u /system/bin/sh "$self" --in-ns "$@" <&3 3<&- &
     else
-        PIDNS=0 unshare -m -u /system/bin/sh "$self" --in-ns "$@" <&3 3<&- &
+        BUSYBOX="$bb" PIDNS=0 unshare -m -u /system/bin/sh "$self" --in-ns "$@" <&3 3<&- &
     fi
     child=$!
     exec 3<&-
@@ -99,7 +177,12 @@ if [ "$phase" = --as-root ]; then
     exit $status
 fi
 
-mount --make-rprivate / 2>/dev/null || mount -o remount,rprivate / 2>/dev/null
+# Mounts made below must never propagate back into Android's own mount namespace.
+mnt --make-rprivate / 2>/dev/null || mount -o rslave / 2>/dev/null
+if grep -q shared: /proc/self/mountinfo; then
+    say "cannot make the mount namespace private; refusing to mount into the shared namespace"
+    exit 126
+fi
 [ -n "$hostname" ] && hostname "$hostname" 2>/dev/null
 
 target_for() {
@@ -110,6 +193,19 @@ target_for() {
         [ -d "${t%/*}" ] || mkdir -p "${t%/*}"
         [ -e "$t" ] || { touch "$t" && chown "$uid:$gid" "$t"; }
     fi 2>/dev/null
+}
+
+bind() {
+    if [ -n "$bb" ]; then
+        "$bb" mount "--$3" "$1" "$2" 2>&1
+    elif [ -c "$1" ] || [ -b "$1" ]; then
+        if [ -c "$1" ]; then kind=c; else kind=b; fi
+        numbers=$(stat -c '%t %T' "$1") || return 1
+        rm -f "$2" && mknod "$2" "$kind" $((0x${numbers% *})) $((0x${numbers#* })) 2>&1 \
+            && chmod "$(stat -c %a "$1")" "$2" && chown "$(stat -c %u:%g "$1")" "$2"
+    else
+        mount -o "$3" "$1" "$2" 2>&1
+    fi
 }
 
 while [ "$1" = -b ]; do
@@ -124,16 +220,19 @@ while [ "$1" = -b ]; do
     esac
     if [ "$dst" = /proc ] && [ "$pidns" = 1 ]; then
         target_for /proc /proc
-        mount -t proc proc "$root/proc" && continue
+        mnt -t proc proc "$root/proc" && continue
     fi
     [ -e "$src" ] || continue
     target_for "$dst" "$src"
+    if [ ! -e "$root$dst" ]; then
+        say "skipped $dst: it cannot be created there"
+        continue
+    fi
     case "$dst" in
         /dev|/sys|/proc) opt=rbind ;;
         *) opt=bind ;;
     esac
-    err=$(mount -o "$opt" "$src" "$root$dst" 2>&1) || err=$(mount "--$opt" "$src" "$root$dst" 2>&1) \
-        || say "cannot bind $src to $dst: $err"
+    err=$(bind "$src" "$root$dst" "$opt") || say "cannot bind $src to $dst: $err"
 done
 
 if [ $# -eq 0 ]; then
