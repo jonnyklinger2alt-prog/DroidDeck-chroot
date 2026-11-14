@@ -136,7 +136,7 @@ object RootSpawner {
             val pumps = ArrayList<Thread>()
             if (streams[0].redirect == null) {
                 val fd = streams[0].fd
-                if (fd != null) pumps.add(pump(FileInputStream(fd), process.outputStream, "root-$id-in").also { it.isDaemon = true })
+                if (fd != null) pumps.add(pump(FileInputStream(fd), process.outputStream, "root-$id-in"))
                 else runCatching { process.outputStream.close() }
             }
             if (streams[1].redirect == null) pumps.add(pump(process.inputStream,
