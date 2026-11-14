@@ -595,11 +595,6 @@
     <string name="perf_fsync_hint">Menjalankan fsync milik Proton sendiri pada file Proton standar, dengan futex_waitv yang disediakan di userspace, sehingga tidak memerlukan paket dan tetap berfungsi begitu Steam memperbarui Proton. Saat aktif, gim menggunakannya sebelum droiddeck-esync, kecuali beberapa gim yang oleh Proton dijaga tetap di luar fsync. Berlaku pada sesi berikutnya.</string>
     <string name="perf_esync_hint">Thread Windows milik gim saling menunggu melalui eventfd dan memori bersama, bukan melalui bolak-balik ke wineserver. Menggunakan paket droiddeck-esync yang dibuat khusus untuk build Proton tersebut; paket diambil secara otomatis. Sampai paket untuk build Proton baru tersedia, droiddeck-fsync menjadi penggantinya. Berlaku pada sesi berikutnya.</string>
     <string name="perf_xalia_hint">Menonaktifkan bantuan navigasi gamepad milik Proton, yang menggunakan CPU di setiap gim.</string>
-    <string name="perf_seccomp">Jalankan proot tanpa seccomp</string>
-    <string name="perf_seccomp_hint">Dapat memperbaiki galat syscall yang hilang pada beberapa kernel. Dapat mengurangi performa.</string>
-    <string name="perf_fastpath">Jalur cepat proot</string>
-    <string name="perf_fastpath_needs_seccomp">Memerlukan filter seccomp milik proot.</string>
-    <string name="perf_fastpath_hint">Pencarian file lebih cepat dan lebih sedikit tersendat. Nonaktifkan jika program tidak dapat menemukan filenya.</string>
     <string name="perf_cursor_composite">Gambar kursor di dalam gamescope</string>
     <string name="perf_cursor_composite_hint">Gamescope menggambar penunjuk sendiri alih-alih menyerahkannya ke Android. Aktifkan untuk kursor yang dikendalikan pengontrol. Nonaktif lebih cepat di ponsel. Berlaku pada sesi berikutnya.</string>
     <string name="perf_identity">Identitas sesi</string>
@@ -1503,9 +1498,6 @@
     <string name="session_ended_desktop">Desktop berhenti secara tak terduga. Bagikan log bersama laporan bug, atau coba lagi.</string>
     <string name="session_ended_detail">Status keluar %1$d · %2$s</string>
     <string name="session_ended_no_log">tidak ada log</string>
-    <plurals name="session_hint_enosys">
-        <item quantity="other">Log menunjukkan %1$d error “Function not implemented”: akselerasi seccomp proot gagal pada salah satu helper di perangkat ini. Coba %2$s → “%3$s” (atau “%4$s”) lalu mulai lagi.</item>
-    </plurals>
 
     <string name="mode_decky_plugins">Plugin</string>
     <string name="mode_decky_plugins_hint">Instal file ZIP plugin untuk sesi Steam berikutnya.</string>

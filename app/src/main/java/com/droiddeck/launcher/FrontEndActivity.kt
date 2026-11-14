@@ -183,8 +183,6 @@ class FrontEndActivity : ComponentActivity() {
     private var zramClient by mutableStateOf(true)
     private var vramCapMb by mutableStateOf(0)
     private var gpuClockPin by mutableStateOf(false)
-    private var prootNoSeccomp by mutableStateOf(false)
-    private var prootFastPath by mutableStateOf(true)
     private var cursorComposite by mutableStateOf(false)
     private var guestHostname by mutableStateOf(SessionPrefs.DEFAULT_GUEST_HOSTNAME)
     private var phantomWarning by mutableStateOf<String?>(null)
@@ -1298,6 +1296,11 @@ class FrontEndActivity : ComponentActivity() {
                         onDesktop = {
                             startSession(Intent(this, SessionActivity::class.java)
                                 .putExtra(SessionService.EXTRA_MODE, SessionService.MODE_DESKTOP))
+                        },
+                        onMobile = {
+                            startSession(Intent(this, SessionActivity::class.java)
+                                .putExtra(SessionService.EXTRA_MODE, SessionService.MODE_DESKTOP)
+                                .putExtra(SessionService.EXTRA_SHELL, SessionService.SHELL_PHOSH))
                         },
                         onEmulator = { e -> launchProgram(e.program) },
                         onUserApp = { app ->
@@ -2553,7 +2556,7 @@ class FrontEndActivity : ComponentActivity() {
             deviceRamMb = (android.app.ActivityManager.MemoryInfo()
                 .also((getSystemService(ACTIVITY_SERVICE) as android.app.ActivityManager)::getMemoryInfo).totalMem / (1024 * 1024)).toInt(),
             ramCapAvailable = com.droiddeck.launcher.core.ZramSupport.supported(),
-            prootNoSeccomp = prootNoSeccomp, prootFastPath = prootFastPath, cursorComposite = cursorComposite,
+            cursorComposite = cursorComposite,
             guestHostname = guestHostname, phantomWarning = phantomWarning,
             onClientOverride = { on -> SessionPrefs.setClientCpusOverride(this, on); clientOverride = on },
             onTuSysmem = { on -> SessionPrefs.setTuSysmem(this, on); tuSysmem = on },
@@ -2569,8 +2572,6 @@ class FrontEndActivity : ComponentActivity() {
             onRamCapMb = { mb -> SessionPrefs.setRamCapMb(this, mb); ramCapMb = mb },
             onZramClient = { on -> SessionPrefs.setZramClient(this, on); zramClient = on },
             onVramCapMb = { mb -> SessionPrefs.setVramCapMb(this, mb); vramCapMb = mb },
-            onProotNoSeccomp = { on -> SessionPrefs.setProotNoSeccomp(this, on); prootNoSeccomp = on },
-            onProotFastPath = { on -> SessionPrefs.setProotFastPath(this, on); prootFastPath = on },
             onCursorComposite = { on -> SessionPrefs.setCursorComposite(this, on); cursorComposite = on },
             onGuestHostname = { name -> SessionPrefs.setGuestHostname(this, name) },
             onClientCore = { core, on ->
@@ -2791,8 +2792,6 @@ class FrontEndActivity : ComponentActivity() {
         zramClient = SessionPrefs.zramClient(this)
         vramCapMb = SessionPrefs.vramCapMb(this)
         gpuClockPin = SessionPrefs.gpuClockPin(this)
-        prootNoSeccomp = SessionPrefs.prootNoSeccomp(this)
-        prootFastPath = SessionPrefs.prootFastPath(this)
         cursorComposite = SessionPrefs.cursorComposite(this)
         guestHostname = SessionPrefs.guestHostname(this)
         refreshPhantomStatus()

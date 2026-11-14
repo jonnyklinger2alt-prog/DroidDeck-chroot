@@ -595,11 +595,6 @@
     <string name="perf_fsync_hint">Menjalankan fsync Proton sendiri pada fail Proton standard, dengan futex_waitv dibekalkan dalam ruang pengguna, jadi ia tidak memerlukan pek dan terus berfungsi sebaik sahaja Steam mengemas kini Proton. Semasa ia hidup, permainan menggunakannya mendahului droiddeck-esync, kecuali beberapa Proton yang mematikan fsync. Berkuat kuasa pada sesi seterusnya.</string>
     <string name="perf_esync_hint">Thread Windows permainan menunggu satu sama lain melalui eventfd dan memori kongsi daripada rangkaian pergi balik melalui wineserver. Menggunakan pek droiddeck-esync yang dibuat untuk binaan Proton itu dengan tepat; pek diambil secara automatik. Sehingga satu wujud untuk binaan Proton baharu, droiddeck-fsync menggantikannya. Berkuat kuasa pada sesi seterusnya.</string>
     <string name="perf_xalia_hint">Melumpuhkan pembantu navigasi pad Proton, yang memakan CPU dalam setiap permainan.</string>
-    <string name="perf_seccomp">Jalankan proot tanpa seccomp</string>
-    <string name="perf_seccomp_hint">Mungkin membetulkan ralat syscall yang hilang pada sesetengah kernel. Boleh mengurangkan prestasi.</string>
-    <string name="perf_fastpath">Laluan pantas proot</string>
-    <string name="perf_fastpath_needs_seccomp">Memerlukan penapis seccomp proot.</string>
-    <string name="perf_fastpath_hint">Carian fail lebih pantas dan kurang tersekat-sekat. Matikan jika sesuatu program tidak dapat mencari failnya.</string>
     <string name="perf_cursor_composite">Lukis kursor di dalam gamescope</string>
     <string name="perf_cursor_composite_hint">Gamescope melukis penuding sendiri dan bukan menyerahkannya kepada Android. Hidupkan untuk kursor yang dikawal pengawal. Mati lebih pantas pada telefon. Berkuat kuasa pada sesi seterusnya.</string>
     <string name="perf_identity">Identiti sesi</string>
@@ -1503,9 +1498,6 @@
     <string name="session_ended_desktop">Desktop terhenti secara tidak dijangka. Kongsi log dengan laporan pepijat, atau cuba lagi.</string>
     <string name="session_ended_detail">Status keluar %1$d · %2$s</string>
     <string name="session_ended_no_log">tiada log</string>
-    <plurals name="session_hint_enosys">
-        <item quantity="other">Log menunjukkan %1$d ralat “Function not implemented”: pecutan seccomp proot gagal pada pembantu di peranti ini. Cuba %2$s → “%3$s” (atau “%4$s”) dan mulakan semula.</item>
-    </plurals>
 
     <string name="mode_decky_plugins">Pemalam</string>
     <string name="mode_decky_plugins_hint">Pasang ZIP pemalam untuk sesi Steam seterusnya.</string>

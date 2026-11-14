@@ -55,10 +55,10 @@ object BottomDesktop {
     private var service: Messenger? = null
     private var binding: ServiceConnection? = null
     private var pendingAttach: Message? = null
-    /** The desktop guest's proot: -1 when there is none, 0 while it is being started. */
+    /** The desktop guest's launcher: -1 when there is none, 0 while it is being started. */
     @Volatile private var guestPid = -1
 
-    /** The proot to freeze with the session when it pauses. */
+    /** The launcher to freeze with the session when it pauses. */
     val suspendPid: Int get() = guestPid
     private var guestGeneration = 0
     var outputSize = 0 to 0

@@ -597,11 +597,6 @@
     <string name="perf_fsync_hint">Kører Protons egen fsync på de uændrede Proton-filer, med futex_waitv leveret i brugerrum, så det kræver ingen pack og fortsætter med at virke, lige så snart Steam opdaterer Proton. Mens den er til, bruger spil den før droiddeck-esync, undtagen de få, Proton holder uden for fsync. Gælder fra næste session.</string>
     <string name="perf_esync_hint">Spils Windows-tråde venter på hinanden via eventfd og delt hukommelse i stedet for ture gennem wineserver. Bruger en droiddeck-esync-pack lavet til netop denne Proton-build; packs hentes automatisk. Indtil der findes en til en ny Proton-build, dækker droiddeck-fsync i stedet. Gælder fra næste session.</string>
     <string name="perf_xalia_hint">Deaktiverer Protons gamepad-navigationshjælper, som koster CPU i hvert spil.</string>
-    <string name="perf_seccomp">Kør proot uden seccomp</string>
-    <string name="perf_seccomp_hint">Kan afhjælpe fejl om manglende systemkald på nogle kerner. Kan reducere ydelsen.</string>
-    <string name="perf_fastpath">proot-hurtigvej</string>
-    <string name="perf_fastpath_needs_seccomp">Kræver prootets seccomp-filter.</string>
-    <string name="perf_fastpath_hint">Hurtigere filopslag og mindre hak. Slå fra, hvis et program ikke kan finde sine filer.</string>
     <string name="perf_cursor_composite">Tegn markøren i gamescope</string>
     <string name="perf_cursor_composite_hint">Gamescope tegner selv markøren i stedet for at overlade den til Android. Slå til for en controllerstyret markør. Fra er hurtigere på en telefon. Gælder fra næste session.</string>
     <string name="perf_identity">Sessionsidentitet</string>
@@ -1519,10 +1514,6 @@
     <string name="session_ended_desktop">Skrivebordet stoppede uventet. Del logs med en fejlrapport, eller prøv igen.</string>
     <string name="session_ended_detail">Afslutningsstatus %1$d · %2$s</string>
     <string name="session_ended_no_log">ingen log</string>
-    <plurals name="session_hint_enosys">
-        <item quantity="one">Loggen viser %1$d \"Function not implemented\"-fejl: proots seccomp-acceleration fejler i en hjælpeproces på denne enhed. Prøv %2$s → \"%3$s\" (eller \"%4$s\"), og start igen.</item>
-        <item quantity="other">Loggen viser %1$d \"Function not implemented\"-fejl: proots seccomp-acceleration fejler i en hjælpeproces på denne enhed. Prøv %2$s → \"%3$s\" (eller \"%4$s\"), og start igen.</item>
-    </plurals>
 
     <string name="mode_decky_plugins">Plugins</string>
     <string name="mode_decky_plugins_hint">Installer en plugin-ZIP til den næste Steam-session.</string>

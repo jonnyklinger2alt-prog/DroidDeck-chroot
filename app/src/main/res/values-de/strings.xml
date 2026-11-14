@@ -597,11 +597,6 @@
     <string name="perf_fsync_hint">Führt Protons eigenes fsync mit den unveränderten Proton-Dateien aus, wobei futex_waitv im Userspace bereitgestellt wird. Es braucht daher kein Pack und funktioniert weiter, sobald Steam Proton aktualisiert. Solange es aktiv ist, nutzen Spiele es vor droiddeck-esync, außer den wenigen, die Proton von fsync fernhält. Gilt ab der nächsten Sitzung.</string>
     <string name="perf_esync_hint">Die Windows-Threads von Spielen warten über eventfd und gemeinsamen Speicher aufeinander statt über Umwege durch wineserver. Nutzt ein droiddeck-esync-Pack, das für genau diesen Proton-Build erstellt wurde; Packs werden automatisch geladen. Bis es eines für einen neuen Proton-Build gibt, springt droiddeck-fsync ein. Gilt ab der nächsten Sitzung.</string>
     <string name="perf_xalia_hint">Deaktiviert Protons Gamepad-Navigationshilfe, die in jedem Spiel CPU-Leistung kostet.</string>
-    <string name="perf_seccomp">proot ohne seccomp ausführen</string>
-    <string name="perf_seccomp_hint">Kann Fehler wegen fehlender Syscalls auf manchen Kerneln beheben. Kann die Leistung mindern.</string>
-    <string name="perf_fastpath">proot-Schnellpfad</string>
-    <string name="perf_fastpath_needs_seccomp">Benötigt den seccomp-Filter von proot.</string>
-    <string name="perf_fastpath_hint">Schnellere Dateisuche und weniger Ruckler. Deaktivieren, wenn ein Programm seine Dateien nicht findet.</string>
     <string name="perf_cursor_composite">Zeiger in gamescope zeichnen</string>
     <string name="perf_cursor_composite_hint">Gamescope zeichnet den Zeiger selbst, statt ihn an Android zu übergeben. Für einen per Controller gesteuerten Zeiger einschalten. Aus ist auf einem Smartphone schneller. Gilt ab der nächsten Sitzung.</string>
     <string name="perf_identity">Sitzungsidentität</string>
@@ -1511,10 +1506,6 @@
     <string name="session_ended_desktop">Der Desktop wurde unerwartet beendet. Teile die Protokolle mit einem Fehlerbericht oder versuche es erneut.</string>
     <string name="session_ended_detail">Exit-Status %1$d · %2$s</string>
     <string name="session_ended_no_log">kein Protokoll</string>
-    <plurals name="session_hint_enosys">
-        <item quantity="one">Das Protokoll zeigt %1$d Fehler „Function not implemented“: Die seccomp-Beschleunigung von proot lässt auf diesem Gerät einen Helfer scheitern. Versuche %2$s → „%3$s“ (oder „%4$s“) und starte neu.</item>
-        <item quantity="other">Das Protokoll zeigt %1$d Fehler „Function not implemented“: Die seccomp-Beschleunigung von proot lässt auf diesem Gerät einen Helfer scheitern. Versuche %2$s → „%3$s“ (oder „%4$s“) und starte neu.</item>
-    </plurals>
 
     <string name="mode_decky_plugins">Plugins</string>
     <string name="mode_decky_plugins_hint">Installiere eine Plugin-ZIP für die nächste Steam-Sitzung.</string>

@@ -390,13 +390,6 @@ for fake in /usr/local/lib/libfakeinput.so /usr/local/lib/libblsession.so; do
     esac
   fi
 done
-audit=/usr/local/lib/libblaudit.so
-if [ -n "${PROOT_FP_KEY:-}" ] && [ -f "$audit" ]; then
-  case ":${LD_AUDIT:-}:" in
-    *":$audit:"*) ;;
-    *) LD_AUDIT="$audit${LD_AUDIT:+:$LD_AUDIT}"; export LD_AUDIT ;;
-  esac
-fi
 depot=
 libraries=$(printf '%%s\\n' "$steam_root" /mnt/droiddeck-sd; sed -n 's/^[[:space:]]*"path"[[:space:]]*"\\(.*\\)"[[:space:]]*$/\\1/p' "$steam_root/steamapps/libraryfolders.vdf" 2>/dev/null)
 for name in %s; do
@@ -463,13 +456,6 @@ for fake in /usr/local/lib/libfakeinput.so /usr/local/lib/libblsession.so; do
     esac
   fi
 done
-audit=/usr/local/lib/libblaudit.so
-if [ -n "${PROOT_FP_KEY:-}" ] && [ -f "$audit" ]; then
-  case ":${LD_AUDIT:-}:" in
-    *":$audit:"*) ;;
-    *) LD_AUDIT="$audit${LD_AUDIT:+:$LD_AUDIT}"; export LD_AUDIT ;;
-  esac
-fi
 bl_components "$here"
 bl_directaudio "$here" "$@"
 bl_game_cpus

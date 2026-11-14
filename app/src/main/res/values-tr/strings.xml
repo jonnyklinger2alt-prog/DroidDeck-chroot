@@ -597,11 +597,6 @@
     <string name="perf_fsync_hint">Proton\'un kendi fsync\'ini standart Proton dosyalarıyla, futex_waitv kullanıcı alanında sağlanarak çalıştırır; bu yüzden paket gerektirmez ve Steam Proton\'u güncellediği anda da çalışmaya devam eder. Açıkken oyunlar, Proton\'un fsync dışında tuttuğu birkaç oyun hariç, bunu droiddeck-esync\'ten önce kullanır. Sonraki oturumda uygulanır.</string>
     <string name="perf_esync_hint">Oyunların Windows iş parçacıkları, wineserver üzerinden gidip gelmek yerine eventfd ve paylaşılan bellek aracılığıyla birbirini bekler. Tam olarak o Proton derlemesi için hazırlanmış bir droiddeck-esync paketi kullanır; paketler otomatik indirilir. Yeni bir Proton derlemesi için paket çıkana kadar droiddeck-fsync devreye girer. Sonraki oturumda uygulanır.</string>
     <string name="perf_xalia_hint">Proton\'un her oyunda CPU harcayan kumandayla gezinme yardımcısını kapatır.</string>
-    <string name="perf_seccomp">proot\'u seccomp olmadan çalıştır</string>
-    <string name="perf_seccomp_hint">Bazı çekirdeklerde eksik sistem çağrısı hatalarını düzeltebilir. Performansı düşürebilir.</string>
-    <string name="perf_fastpath">proot hızlı yolu</string>
-    <string name="perf_fastpath_needs_seccomp">proot\'un seccomp filtresi gerekir.</string>
-    <string name="perf_fastpath_hint">Daha hızlı dosya aramaları ve daha az takılma. Bir program dosyalarını bulamıyorsa kapatın.</string>
     <string name="perf_cursor_composite">İmleci gamescope içinde çiz</string>
     <string name="perf_cursor_composite_hint">Gamescope işaretçiyi Android\'e bırakmak yerine kendisi çizer. Kumandayla yönetilen imleç için açın. Telefonda kapalıyken daha hızlıdır. Sonraki oturumda uygulanır.</string>
     <string name="perf_identity">Oturum kimliği</string>
@@ -1511,10 +1506,6 @@
     <string name="session_ended_desktop">Masaüstü beklenmedik şekilde durdu. Günlükleri bir hata raporuyla paylaşın veya yeniden deneyin.</string>
     <string name="session_ended_detail">Çıkış durumu %1$d · %2$s</string>
     <string name="session_ended_no_log">günlük yok</string>
-    <plurals name="session_hint_enosys">
-        <item quantity="one">Günlükte %1$d “Function not implemented” hatası görünüyor: proot\'un seccomp hızlandırması bu cihazda bir yardımcı işlemi bozuyor. %2$s → “%3$s” (veya “%4$s”) seçeneğini deneyip yeniden başlatın.</item>
-        <item quantity="other">Günlükte %1$d “Function not implemented” hatası görünüyor: proot\'un seccomp hızlandırması bu cihazda bir yardımcı işlemi bozuyor. %2$s → “%3$s” (veya “%4$s”) seçeneğini deneyip yeniden başlatın.</item>
-    </plurals>
 
     <string name="mode_decky_plugins">Eklentiler</string>
     <string name="mode_decky_plugins_hint">Sonraki Steam oturumu için bir eklenti ZIP dosyası yükleyin.</string>

@@ -595,11 +595,6 @@
     <string name="perf_fsync_hint">รัน fsync ของ Proton เองบนไฟล์ Proton มาตรฐาน โดยมี futex_waitv ที่จัดเตรียมในระดับยูสเซอร์สเปซ จึงไม่ต้องใช้แพ็กและยังคงทำงานได้ทันทีที่ Steam อัปเดต Proton เมื่อเปิดใช้ เกมจะใช้สิ่งนี้ก่อน droiddeck-esync ยกเว้นบางส่วนที่ Proton ปิด fsync ไว้ จะมีผลในเซสชันถัดไป</string>
     <string name="perf_esync_hint">เธรด Windows ของเกมรอกันผ่าน eventfd และหน่วยความจำที่ใช้ร่วมกัน แทนการเดินทางไปกลับผ่าน wineserver ใช้แพ็ก droiddeck-esync ที่สร้างไว้สำหรับบิลด์ Proton นั้นโดยเฉพาะ แพ็กจะถูกดึงมาโดยอัตโนมัติ จนกว่าจะมีแพ็กสำหรับบิลด์ Proton ใหม่ droiddeck-fsync จะทำหน้าที่แทน จะมีผลในเซสชันถัดไป</string>
     <string name="perf_xalia_hint">ปิดตัวช่วยควบคุมด้วยคอนโทรลเลอร์ของ Proton ซึ่งกินพลัง CPU ในทุกเกม</string>
-    <string name="perf_seccomp">รัน proot โดยไม่ใช้ seccomp</string>
-    <string name="perf_seccomp_hint">อาจแก้ข้อผิดพลาด syscall ที่ขาดหายบนบางเคอร์เนล อาจลดประสิทธิภาพ</string>
-    <string name="perf_fastpath">เส้นทางลัดของ proot</string>
-    <string name="perf_fastpath_needs_seccomp">ต้องใช้ตัวกรอง seccomp ของ proot</string>
-    <string name="perf_fastpath_hint">ค้นหาไฟล์เร็วขึ้นและสะดุดน้อยลง ปิดหากโปรแกรมหาไฟล์ของตัวเองไม่พบ</string>
     <string name="perf_cursor_composite">วาดเคอร์เซอร์ภายใน gamescope</string>
     <string name="perf_cursor_composite_hint">Gamescope จะวาดตัวชี้เองแทนการส่งให้ Android เปิดเพื่อใช้เคอร์เซอร์ที่ควบคุมด้วยคอนโทรลเลอร์ ปิดไว้จะเร็วกว่าบนโทรศัพท์ มีผลในเซสชันถัดไป</string>
     <string name="perf_identity">ข้อมูลประจำตัวของเซสชัน</string>
@@ -1503,9 +1498,6 @@
     <string name="session_ended_desktop">เดสก์ท็อปหยุดทำงานกะทันหัน แชร์ล็อกพร้อมรายงานข้อบกพร่อง หรือลองใหม่</string>
     <string name="session_ended_detail">สถานะออก %1$d · %2$s</string>
     <string name="session_ended_no_log">ไม่มีล็อก</string>
-    <plurals name="session_hint_enosys">
-        <item quantity="other">ล็อกแสดงข้อผิดพลาด “Function not implemented” %1$d รายการ: การเร่งความเร็ว seccomp ของ proot ทำให้ตัวช่วยบนอุปกรณ์นี้ล้มเหลว ลอง %2$s → “%3$s” (หรือ “%4$s”) แล้วเริ่มใหม่</item>
-    </plurals>
 
     <string name="mode_decky_plugins">พลักอิน</string>
     <string name="mode_decky_plugins_hint">ติดตั้งไฟล์ ZIP พลักอินสำหรับเซสชัน Steam ครั้งถัดไป</string>

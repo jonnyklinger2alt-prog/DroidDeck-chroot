@@ -597,11 +597,6 @@
     <string name="perf_fsync_hint">Käynnistää Protonin omaa fsynciä vakiotiedostoilla, futex_waitv tarjottuna käyttäjätilassa, niin se ei tarvitse pakettia ja toimii edelleen heti kun Steam päivittää Protonin. Kun se on päällä, pelit käyttävät sitä droiddeck-esyncin edellä, paitsi harvat, jotka Proton pitää pois fsyncistä. Tulee voimaan seuraavassa istunnossa.</string>
     <string name="perf_esync_hint">Pelien Windows-säikeet odottavat toisiaan eventfd:n ja jaetun muistin avulla sen sijaan, että kiertäisivät wineserverin kautta. Käyttää juuri tälle Proton-versiolle tehtyä droiddeck-esync-pakettia; paketit haetaan automaattisesti. Kunnes sellainen on olemassa uudelle Proton-versiolle, droiddeck-fsync toimii sen tilalla. Tulee voimaan seuraavassa istunnossa.</string>
     <string name="perf_xalia_hint">Poistaa käytöstä Protonin ohjaimen navigointiavustimen, joka kuluttaa suoritintehoa jokaisessa pelissä.</string>
-    <string name="perf_seccomp">Suorita proot ilman seccompia</string>
-    <string name="perf_seccomp_hint">Voi korjata puuttuvan järjestelmäkutsun virheitä joissakin ytimissä. Voi heikentää suorituskykyä.</string>
-    <string name="perf_fastpath">proot-pikareitti</string>
-    <string name="perf_fastpath_needs_seccomp">Vaatii prootin seccomp-suodattimen.</string>
-    <string name="perf_fastpath_hint">Nopeampi tiedostojen hakeminen ja vähemmän nykimistä. Poista käytöstä, jos ohjelma ei löydä tiedostojaan.</string>
     <string name="perf_cursor_composite">Piirrä osoitin gamescopessa</string>
     <string name="perf_cursor_composite_hint">Gamescope piirtää osoittimen itse sen sijaan, että antaisi sen Androidille. Ota käyttöön ohjaimella ohjattavaa osoitinta varten. Pois päältä on nopeampi puhelimessa. Tulee voimaan seuraavassa istunnossa.</string>
     <string name="perf_identity">Istunnon identiteetti</string>
@@ -1519,10 +1514,6 @@
     <string name="session_ended_desktop">Työpöytä pysähtyi odottamatta. Jaa lokit virheraportin mukana, tai yritä uudelleen.</string>
     <string name="session_ended_detail">Poistumistila %1$d · %2$s</string>
     <string name="session_ended_no_log">ei lokia</string>
-    <plurals name="session_hint_enosys">
-        <item quantity="one">Loki näyttää %1$d ”Function not implemented” -virheen: prootin seccomp-kiihdytys epäonnistuu laitteen apuohjelmassa. Kokeile %2$s → ”%3$s” (tai ”%4$s”) ja käynnistä uudelleen.</item>
-        <item quantity="other">Loki näyttää %1$d ”Function not implemented” -virhettä: prootin seccomp-kiihdytys epäonnistuu laitteen apuohjelmassa. Kokeile %2$s → ”%3$s” (tai ”%4$s”) ja käynnistä uudelleen.</item>
-    </plurals>
 
     <string name="mode_decky_plugins">Laajennukset</string>
     <string name="mode_decky_plugins_hint">Asenna laajennuksen ZIP-tiedosto seuraavaa Steam-istuntoa varten.</string>

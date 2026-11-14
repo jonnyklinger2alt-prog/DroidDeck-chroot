@@ -215,7 +215,7 @@ object GraphicsReport {
                 }
                 if (guestLines.any { it.contains("MEM_EXEC_INIT") }) {
                     appendLine("note: kbase refused KBASE_IOCTL_MEM_EXEC_INIT with EPERM. That answer comes from the kbase driver")
-                    appendLine("      itself (proot does not filter ioctls; Android's seccomp would kill or return ENOSYS; SELinux")
+                    appendLine("      itself (the chroot does not filter ioctls; Android's seccomp would kill or return ENOSYS; SELinux")
                     appendLine("      would return EACCES), so it is the kernel's policy for this context, not the session's.")
                 }
                 appendLine("-- driver lines from the session log (${guestLines.size})")

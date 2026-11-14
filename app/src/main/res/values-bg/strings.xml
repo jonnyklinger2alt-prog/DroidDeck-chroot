@@ -597,11 +597,6 @@
     <string name="perf_fsync_hint">Стартира собствения fsync на Proton върху оригиналните файлове на Proton, с futex_waitv, подаден от потребителско ниво, затова не изисква пакет и продължава да работи веднага след актуализация на Proton от Steam. Докато е включен, игрите го използват преди droiddeck-esync, освен малкото, които Proton държи извън fsync. Прилага се от следващата сесия.</string>
     <string name="perf_esync_hint">Windows нишките на игрите се изчакват взаимно чрез eventfd и обща памет, вместо през обиколки през wineserver. Използва пакет droiddeck-esync, направен точно за тази версия на Proton; пакетите се извличат автоматично. Докато не съществува такъв за нова версия на Proton, droiddeck-fsync го замества. Прилага се от следващата сесия.</string>
     <string name="perf_xalia_hint">Изключва помощника на Proton за навигация с контролер, който използва процесорно време във всяка игра.</string>
-    <string name="perf_seccomp">Стартиране на proot без seccomp</string>
-    <string name="perf_seccomp_hint">Може да отстрани грешки с липсващи системни извиквания на някои ядра. Може да намали производителността.</string>
-    <string name="perf_fastpath">Бърз път на proot</string>
-    <string name="perf_fastpath_needs_seccomp">Изисква филтъра seccomp на proot.</string>
-    <string name="perf_fastpath_hint">По-бързо търсене на файлове и по-малко заекване. Изключете, ако програма не може да намери файловете си.</string>
     <string name="perf_cursor_composite">Изобразяване на курсора в gamescope</string>
     <string name="perf_cursor_composite_hint">Gamescope сам рисува показалеца, вместо да го предава на Android. Включете за курсор, управляван с контролер. Изключено е по-бързо на телефон. Прилага се от следващата сесия.</string>
     <string name="perf_identity">Идентичност на сесията</string>
@@ -1519,10 +1514,6 @@
     <string name="session_ended_desktop">Работният плот спря неочаквано. Сподели логовете в отчет за грешка или опитай отново.</string>
     <string name="session_ended_detail">Код на изход %1$d · %2$s</string>
     <string name="session_ended_no_log">няма лог</string>
-    <plurals name="session_hint_enosys">
-        <item quantity="one">Логът показва %1$d грешка „Function not implemented“: ускорението на proot чрез seccomp се проваля при помощен процес на това устройство. Пробвай %2$s → „%3$s“ (или „%4$s“) и стартирай отново.</item>
-        <item quantity="other">Логът показва %1$d грешки „Function not implemented“: ускорението на proot чрез seccomp се проваля при помощен процес на това устройство. Пробвай %2$s → „%3$s“ (или „%4$s“) и стартирай отново.</item>
-    </plurals>
 
     <string name="mode_decky_plugins">Плъгини</string>
     <string name="mode_decky_plugins_hint">Инсталирай ZIP с плъгин за следващата сесия на Steam.</string>

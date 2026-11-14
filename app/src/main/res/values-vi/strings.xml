@@ -595,11 +595,6 @@
     <string name="perf_fsync_hint">Chạy fsync riêng của Proton trên các tệp Proton gốc, với futex_waitv được cung cấp ở không gian người dùng, nên không cần pack và vẫn hoạt động ngay khi Steam cập nhật Proton. Khi đang bật, game dùng nó trước droiddeck-esync, trừ một số ít Proton giữ fsync tắt. Áp dụng từ phiên sau.</string>
     <string name="perf_esync_hint">Các luồng Windows của game chờ nhau qua eventfd và bộ nhớ dùng chung, thay vì đi vòng qua wineserver. Dùng pack droiddeck-esync được làm riêng cho đúng bản build Proton đó; pack được tự động tải về. Cho đến khi có pack cho một bản build Proton mới, droiddeck-fsync sẽ thay thế. Áp dụng từ phiên sau.</string>
     <string name="perf_xalia_hint">Tắt trình hỗ trợ điều hướng bằng tay cầm của Proton, vốn tốn CPU trong mọi game.</string>
-    <string name="perf_seccomp">Chạy proot không có seccomp</string>
-    <string name="perf_seccomp_hint">Có thể sửa lỗi thiếu syscall trên một số kernel. Có thể giảm hiệu năng.</string>
-    <string name="perf_fastpath">Fast path của proot</string>
-    <string name="perf_fastpath_needs_seccomp">Cần bộ lọc seccomp của proot.</string>
-    <string name="perf_fastpath_hint">Tra cứu tệp nhanh hơn và ít giật hơn. Tắt nếu một chương trình không tìm thấy tệp của nó.</string>
     <string name="perf_cursor_composite">Vẽ con trỏ bên trong gamescope</string>
     <string name="perf_cursor_composite_hint">Gamescope tự vẽ con trỏ thay vì giao cho Android. Bật để dùng con trỏ điều khiển bằng tay cầm. Tắt sẽ nhanh hơn trên điện thoại. Áp dụng từ phiên sau.</string>
     <string name="perf_identity">Danh tính phiên</string>
@@ -1503,9 +1498,6 @@
     <string name="session_ended_desktop">Desktop đã dừng ngoài ý muốn. Hãy chia sẻ log cùng báo cáo lỗi, hoặc thử lại.</string>
     <string name="session_ended_detail">Mã thoát %1$d · %2$s</string>
     <string name="session_ended_no_log">không có log</string>
-    <plurals name="session_hint_enosys">
-        <item quantity="other">Log cho thấy %1$d lỗi \"Function not implemented\": khả năng tăng tốc seccomp của proot đang làm hỏng một helper trên thiết bị này. Hãy thử %2$s → \"%3$s\" (hoặc \"%4$s\") rồi khởi động lại.</item>
-    </plurals>
 
     <string name="mode_decky_plugins">Plugin</string>
     <string name="mode_decky_plugins_hint">Cài một tệp ZIP plugin cho phiên Steam kế tiếp.</string>

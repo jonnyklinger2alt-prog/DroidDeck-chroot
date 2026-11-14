@@ -597,11 +597,6 @@
     <string name="perf_fsync_hint">स्टॉक Proton फ़ाइलों पर Proton का अपना fsync चलाता है, futex_waitv यूज़रस्पेस में दिया जाता है, इसलिए इसे किसी पैक की ज़रूरत नहीं और Steam के Proton अपडेट करते ही यह काम करता रहता है। चालू रहते हुए, गेम इसे droiddeck-esync से पहले इस्तेमाल करते हैं, सिवाय उन कुछ के जिन्हें Proton fsync से दूर रखता है। अगले सेशन से लागू होता है।</string>
     <string name="perf_esync_hint">गेम के Windows थ्रेड wineserver के राउंड ट्रिप के बजाय eventfd और शेयर्ड मेमोरी से एक-दूसरे का इंतज़ार करते हैं। उस खास Proton बिल्ड के लिए बने droiddeck-esync पैक का उपयोग करता है; पैक अपने आप मिल जाते हैं। किसी नए Proton बिल्ड के लिए पैक न होने तक droiddeck-fsync जगह लेता है। अगले सेशन से लागू होता है।</string>
     <string name="perf_xalia_hint">Proton के गेमपैड नेविगेशन हेल्पर को बंद करता है, जो हर गेम में CPU खर्च करता है।</string>
-    <string name="perf_seccomp">proot को seccomp के बिना चलाएं</string>
-    <string name="perf_seccomp_hint">कुछ कर्नेल पर missing-syscall एरर ठीक कर सकता है। परफ़ॉर्मेंस घटा सकता है।</string>
-    <string name="perf_fastpath">proot फ़ास्ट पाथ</string>
-    <string name="perf_fastpath_needs_seccomp">proot के seccomp फ़िल्टर की ज़रूरत है।</string>
-    <string name="perf_fastpath_hint">तेज़ फ़ाइल लुकअप और कम अटकाव। अगर कोई प्रोग्राम अपनी फ़ाइलें न खोज पाए तो इसे बंद करें।</string>
     <string name="perf_cursor_composite">gamescope के अंदर कर्सर बनाएं</string>
     <string name="perf_cursor_composite_hint">Gamescope पॉइंटर को Android को देने के बजाय खुद बनाता है। कंट्रोलर से चलने वाले कर्सर के लिए चालू करें। फ़ोन पर बंद रखना तेज़ है। अगले सेशन से लागू होता है।</string>
     <string name="perf_identity">सेशन पहचान</string>
@@ -1519,10 +1514,6 @@
     <string name="session_ended_desktop">डेस्कटॉप अचानक बंद हो गया। बग रिपोर्ट के साथ लॉग शेयर करें, या फिर कोशिश करें।</string>
     <string name="session_ended_detail">एग्ज़िट स्टेटस %1$d · %2$s</string>
     <string name="session_ended_no_log">कोई लॉग नहीं</string>
-    <plurals name="session_hint_enosys">
-        <item quantity="one">लॉग में %1$d “Function not implemented” एरर दिखता है: इस डिवाइस पर proot का seccomp एक्सेलरेशन एक हेल्पर को फेल कर रहा है। %2$s → “%3$s” (या “%4$s”) आज़माएं और फिर से शुरू करें।</item>
-        <item quantity="other">लॉग में %1$d “Function not implemented” एरर दिखते हैं: इस डिवाइस पर proot का seccomp एक्सेलरेशन एक हेल्पर को फेल कर रहा है। %2$s → “%3$s” (या “%4$s”) आज़माएं और फिर से शुरू करें।</item>
-    </plurals>
 
     <string name="mode_decky_plugins">प्लगइन</string>
     <string name="mode_decky_plugins_hint">अगले Steam सेशन के लिए एक प्लगइन ZIP इंस्टॉल करें।</string>

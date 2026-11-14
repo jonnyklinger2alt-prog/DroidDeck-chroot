@@ -3,7 +3,6 @@ package com.droiddeck.launcher.runtime
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.os.StatFs
-import android.system.Os
 import android.util.Log
 import androidx.annotation.StringRes
 import com.droiddeck.launcher.R
@@ -116,7 +115,6 @@ object AppImageManager {
 
     private fun extract(context: Context, dir: File, file: File, onProgress: (String) -> Unit): String? {
         val image = File(dir, "image.AppImage")
-        val links = File(dir, ".links").apply { mkdirs() }
         try {
             dir.mkdirs()
             onProgress(context.getString(R.string.user_apps_copying, file.name))
@@ -131,30 +129,15 @@ object AppImageManager {
                 "cd \"$1\" && rm -rf squashfs-root AppDir && { $unpack; } >/dev/null && " +
                     "rm -rf app && mv \"$(readlink -f squashfs-root)\" app && rm -f squashfs-root",
                 "extract", "$GUEST_DIR/${dir.name}",
-            ), logName = "appimage-import", linkDir = links) { line -> if (out.length < 2000) out.appendLine(line) }
+            ), logName = "appimage-import") { line -> if (out.length < 2000) out.appendLine(line) }
             if (status != 0 || !File(dir, "app").isDirectory) {
                 listOf("squashfs-root", "AppDir").forEach { FileUtils.delete(File(dir, it)) }
                 return out.lines().lastOrNull { it.isNotBlank() }?.let { context.getString(R.string.appimg_extract_failed_detail, it) }
                     ?: context.getString(R.string.appimg_extract_failed)
             }
-            copyLinkedFiles(File(dir, "app"), links)
             return null
         } finally {
             image.delete()
-            FileUtils.delete(links)
-        }
-    }
-
-    private fun copyLinkedFiles(app: File, links: File) {
-        val roots = setOf(links.path + "/", links.canonicalPath + "/")
-        app.walkTopDown().onEnter { !Files.isLink(it) }.forEach { f ->
-            if (!Files.isLink(f)) return@forEach
-            val target = runCatching { Os.readlink(f.path) }.getOrNull() ?: return@forEach
-            if (roots.none { target.startsWith(it) }) return@forEach
-            val data = f.toPath().toRealPath()
-            java.nio.file.Files.delete(f.toPath())
-            java.nio.file.Files.copy(data, f.toPath())
-            if (java.nio.file.Files.isExecutable(data)) f.setExecutable(true, false)
         }
     }
 

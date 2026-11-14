@@ -562,6 +562,7 @@ class SessionService : Service() {
             return
         }
         if (steamHere) guest.add("BL_EPIC_APP_ID=" + com.droiddeck.launcher.stores.epic.EpicClient.shortcutAppId)
+        if (SessionState.phoshShell) guest.add("BL_DESKTOP_SHELL=$SHELL_PHOSH")
 
         val pulse = startAudio(guest, sessionDir, directAudioPack)
         startVkBridge(guest, sessionDir)
@@ -2355,6 +2356,8 @@ class SessionService : Service() {
         private const val FIRST_VIRTUAL_PAD = 16
 
         const val EXTRA_MODE = "mode"
+        const val EXTRA_SHELL = "shell"
+        const val SHELL_PHOSH = "phosh"
         const val MODE_STEAM = "steam"
         const val MODE_DESKTOP = "lxqt"
         const val MODE_RUN = "run"

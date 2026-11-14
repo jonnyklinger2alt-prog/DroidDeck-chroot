@@ -597,11 +597,6 @@
     <string name="perf_fsync_hint">Εκτελεί το δικό του fsync του Proton στα απλά αρχεία Proton, με το futex_waitv παρεχόμενο σε επίπεδο χρήστη, οπότε δεν χρειάζεται πακέτο και συνεχίζει να λειτουργεί τη στιγμή που το Steam ενημερώνει το Proton. Όσο είναι ενεργό, τα παιχνίδια το χρησιμοποιούν πριν από το droiddeck-esync, εκτός από τα λίγα που το Proton κρατά εκτός fsync. Εφαρμόζεται στην επόμενη συνεδρία.</string>
     <string name="perf_esync_hint">Τα νήματα Windows των παιχνιδιών περιμένουν το ένα το άλλο μέσω eventfd και κοινόχρηστης μνήμης αντί για διαδρομές μέσω wineserver. Χρησιμοποιεί ένα πακέτο droiddeck-esync φτιαγμένο ειδικά για αυτό το build του Proton· τα πακέτα λαμβάνονται αυτόματα. Μέχρι να υπάρξει ένα για νέο build του Proton, το droiddeck-fsync το αναπληρώνει. Εφαρμόζεται στην επόμενη συνεδρία.</string>
     <string name="perf_xalia_hint">Απενεργοποιεί τον βοηθό πλοήγησης με χειριστήριο του Proton, που κοστίζει CPU σε κάθε παιχνίδι.</string>
-    <string name="perf_seccomp">Εκτέλεση του proot χωρίς seccomp</string>
-    <string name="perf_seccomp_hint">Μπορεί να διορθώσει σφάλματα απόντων syscall σε ορισμένους πυρήνες. Μπορεί να μειώσει την απόδοση.</string>
-    <string name="perf_fastpath">Ταχεία διαδρομή proot</string>
-    <string name="perf_fastpath_needs_seccomp">Απαιτεί το φίλτρο seccomp του proot.</string>
-    <string name="perf_fastpath_hint">Ταχύτερη αναζήτηση αρχείων και λιγότερα κολλήματα. Απενεργοποιήστε το αν ένα πρόγραμμα δεν μπορεί να βρει τα αρχεία του.</string>
     <string name="perf_cursor_composite">Σχεδίαση του δείκτη μέσα στο gamescope</string>
     <string name="perf_cursor_composite_hint">Το Gamescope σχεδιάζει μόνο του τον δείκτη αντί να τον παραδίδει στο Android. Ενεργοποιήστε το για δείκτη που ελέγχεται από χειριστήριο. Το ανενεργό είναι πιο γρήγορο σε τηλέφωνο. Εφαρμόζεται στην επόμενη συνεδρία.</string>
     <string name="perf_identity">Ταυτότητα συνεδρίας</string>
@@ -1519,10 +1514,6 @@
     <string name="session_ended_desktop">Η επιφάνεια εργασίας διακόπηκε αναπάντεχα. Κοινοποιήστε τα αρχεία καταγραφής με μια αναφορά σφάλματος, ή δοκιμάστε ξανά.</string>
     <string name="session_ended_detail">Κατάσταση εξόδου %1$d · %2$s</string>
     <string name="session_ended_no_log">χωρίς αρχείο καταγραφής</string>
-    <plurals name="session_hint_enosys">
-        <item quantity="one">Το αρχείο καταγραφής δείχνει %1$d σφάλμα «Function not implemented»: η επιτάχυνση seccomp του proot αποτυγχάνει σε έναν βοηθητικό μηχανισμό σε αυτή τη συσκευή. Δοκιμάστε %2$s → «%3$s» (ή «%4$s») και ξεκινήστε ξανά.</item>
-        <item quantity="other">Το αρχείο καταγραφής δείχνει %1$d σφάλματα «Function not implemented»: η επιτάχυνση seccomp του proot αποτυγχάνει σε έναν βοηθητικό μηχανισμό σε αυτή τη συσκευή. Δοκιμάστε %2$s → «%3$s» (ή «%4$s») και ξεκινήστε ξανά.</item>
-    </plurals>
 
     <string name="mode_decky_plugins">Πρόσθετα</string>
     <string name="mode_decky_plugins_hint">Εγκαταστήστε ένα ZIP προσθέτου για την επόμενη συνεδρία Steam.</string>

@@ -139,6 +139,11 @@ object SessionState {
     var mode = "steam"
 
     @Volatile
+    var desktopShell = ""
+
+    val phoshShell get() = mode == SessionService.MODE_DESKTOP && desktopShell == SessionService.SHELL_PHOSH
+
+    @Volatile
     var outputSize: Pair<Int, Int> = Pair(1920, 1080)
 
     @Volatile

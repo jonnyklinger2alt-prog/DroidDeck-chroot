@@ -101,7 +101,7 @@ internal object ItchPatch {
                     .distinct().takeIf { it.isNotEmpty() }
                 val tail = ArrayDeque<String>()
                 val code = try {
-                    GuestCommand.run(app, args, logName = "itch-butler", extraBinds = binds, fastPath = true, cancelled = cancelled) { line ->
+                    GuestCommand.run(app, args, logName = "itch-butler", extraBinds = binds, cancelled = cancelled) { line ->
                         if (!line.startsWith("chroot: ")) {
                             if (tail.size == 4) tail.removeFirst()
                             tail.addLast(line)

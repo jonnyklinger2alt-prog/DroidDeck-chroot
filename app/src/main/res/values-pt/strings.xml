@@ -599,11 +599,6 @@
     <string name="perf_fsync_hint">Roda o fsync do próprio Proton nos arquivos originais do Proton, com o futex_waitv fornecido em espaço de usuário, então não precisa de pacote e continua funcionando assim que a Steam atualiza o Proton. Enquanto estiver ativado, os jogos o usam antes do droiddeck-esync, exceto os poucos que o Proton mantém fora do fsync. Vale a partir da próxima sessão.</string>
     <string name="perf_esync_hint">As threads do Windows dos jogos esperam umas pelas outras via eventfd e memória compartilhada, em vez de idas e voltas pelo wineserver. Usa um pacote droiddeck-esync feito para aquela versão exata do Proton; os pacotes são obtidos automaticamente. Até existir um para uma nova versão do Proton, o droiddeck-fsync faz o papel dele. Vale a partir da próxima sessão.</string>
     <string name="perf_xalia_hint">Desativa o assistente de navegação por controle do Proton, que consome CPU em todos os jogos.</string>
-    <string name="perf_seccomp">Rodar o proot sem seccomp</string>
-    <string name="perf_seccomp_hint">Pode corrigir erros de syscall ausente em alguns kernels. Pode reduzir o desempenho.</string>
-    <string name="perf_fastpath">Caminho rápido do proot</string>
-    <string name="perf_fastpath_needs_seccomp">Requer o filtro seccomp do proot.</string>
-    <string name="perf_fastpath_hint">Buscas de arquivos mais rápidas e menos engasgos. Desative se um programa não encontrar os arquivos dele.</string>
     <string name="perf_cursor_composite">Desenhar o cursor dentro do gamescope</string>
     <string name="perf_cursor_composite_hint">O gamescope desenha o ponteiro em vez de repassá-lo ao Android. Ative para um cursor movido pelo controle. Desativado é mais rápido em um celular. Vale a partir da próxima sessão.</string>
     <string name="perf_identity">Identidade da sessão</string>
@@ -1527,11 +1522,6 @@
     <string name="session_ended_desktop">A área de trabalho parou inesperadamente. Compartilhe os logs em um relatório de bug ou tente de novo.</string>
     <string name="session_ended_detail">Código de saída %1$d · %2$s</string>
     <string name="session_ended_no_log">sem log</string>
-    <plurals name="session_hint_enosys">
-        <item quantity="one">O log mostra %1$d erro “Function not implemented”: a aceleração seccomp do proot está falhando em um auxiliar neste dispositivo. Tente %2$s → “%3$s” (ou “%4$s”) e inicie de novo.</item>
-        <item quantity="many">O log mostra %1$d erros “Function not implemented”: a aceleração seccomp do proot está falhando em um auxiliar neste dispositivo. Tente %2$s → “%3$s” (ou “%4$s”) e inicie de novo.</item>
-        <item quantity="other">O log mostra %1$d erros “Function not implemented”: a aceleração seccomp do proot está falhando em um auxiliar neste dispositivo. Tente %2$s → “%3$s” (ou “%4$s”) e inicie de novo.</item>
-    </plurals>
 
     <string name="mode_decky_plugins">Plugins</string>
     <string name="mode_decky_plugins_hint">Instale um ZIP de plugin para a próxima sessão do Steam.</string>

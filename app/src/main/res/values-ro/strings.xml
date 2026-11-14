@@ -599,11 +599,6 @@
     <string name="perf_fsync_hint">Rulează propriul fsync al Proton pe fișierele Proton standard, cu futex_waitv furnizat la nivel de utilizator, deci nu are nevoie de pachet și continuă să funcționeze imediat ce Steam actualizează Proton. Cât timp este activ, jocurile îl folosesc înaintea droiddeck-esync, cu excepția celor puține pe care Proton le ține în afara fsync. Se aplică la sesiunea următoare.</string>
     <string name="perf_esync_hint">Firele Windows ale jocurilor se așteaptă unele pe altele prin eventfd și memorie partajată, în loc de drumuri dus-întors prin wineserver. Folosește un pachet droiddeck-esync creat pentru exact acea versiune de Proton; pachetele sunt obținute automat. Până când există unul pentru o versiune nouă de Proton, droiddeck-fsync îl înlocuiește. Se aplică la sesiunea următoare.</string>
     <string name="perf_xalia_hint">Dezactivează asistentul de navigare cu gamepad al Proton, care costă CPU în fiecare joc.</string>
-    <string name="perf_seccomp">Rulează proot fără seccomp</string>
-    <string name="perf_seccomp_hint">Poate remedia erori de apel de sistem lipsă pe unele kernel-uri. Poate reduce performanța.</string>
-    <string name="perf_fastpath">Cale rapidă proot</string>
-    <string name="perf_fastpath_needs_seccomp">Necesită filtrul seccomp al proot.</string>
-    <string name="perf_fastpath_hint">Căutări de fișiere mai rapide și mai puține sacadări. Dezactivează dacă un program nu își găsește fișierele.</string>
     <string name="perf_cursor_composite">Desenează cursorul în gamescope</string>
     <string name="perf_cursor_composite_hint">Gamescope desenează singur cursorul în loc să-l predea Android. Activează pentru un cursor controlat cu controllerul. Dezactivat este mai rapid pe telefon. Se aplică la sesiunea următoare.</string>
     <string name="perf_identity">Identitatea sesiunii</string>
@@ -1535,11 +1530,6 @@
     <string name="session_ended_desktop">Desktopul s-a oprit neașteptat. Partajează jurnalele cu un raport de eroare, sau încearcă din nou.</string>
     <string name="session_ended_detail">Stare de ieșire %1$d · %2$s</string>
     <string name="session_ended_no_log">niciun jurnal</string>
-    <plurals name="session_hint_enosys">
-        <item quantity="one">Jurnalul arată %1$d eroare „Function not implemented”: accelerarea seccomp a proot nu reușește să ruleze un auxiliar pe acest dispozitiv. Încearcă %2$s → „%3$s” (sau „%4$s”) și pornește din nou.</item>
-        <item quantity="few">Jurnalul arată %1$d erori „Function not implemented”: accelerarea seccomp a proot nu reușește să ruleze un auxiliar pe acest dispozitiv. Încearcă %2$s → „%3$s” (sau „%4$s”) și pornește din nou.</item>
-        <item quantity="other">Jurnalul arată %1$d de erori „Function not implemented”: accelerarea seccomp a proot nu reușește să ruleze un auxiliar pe acest dispozitiv. Încearcă %2$s → „%3$s” (sau „%4$s”) și pornește din nou.</item>
-    </plurals>
 
     <string name="mode_decky_plugins">Pluginuri</string>
     <string name="mode_decky_plugins_hint">Instalează o arhivă ZIP cu un plugin pentru sesiunea Steam următoare.</string>

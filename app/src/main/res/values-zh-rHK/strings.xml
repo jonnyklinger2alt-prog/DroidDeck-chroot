@@ -595,11 +595,6 @@
     <string name="perf_fsync_hint">在原裝 Proton 檔案上執行 Proton 本身的 fsync，並在用戶空間提供 futex_waitv，因此無需套件，Steam 更新 Proton 後亦能立即繼續運作。開啟時，遊戲會優先使用它而非 droiddeck-esync，Proton 刻意不用 fsync 的少數遊戲除外。下次會話生效。</string>
     <string name="perf_esync_hint">遊戲的 Windows 線程透過 eventfd 和共用記憶體互相等待，而不必經 wineserver 來回往返。使用專為該 Proton 版本製作的 droiddeck-esync 套件，套件會自動下載。新 Proton 版本未有套件前，會暫時改用 droiddeck-fsync。下次會話生效。</string>
     <string name="perf_xalia_hint">停用 Proton 的控制器導覽輔助程式，它在每個遊戲中都會佔用 CPU。</string>
-    <string name="perf_seccomp">不使用 seccomp 執行 proot</string>
-    <string name="perf_seccomp_hint">可能修正部分內核上缺少系統呼叫的錯誤，但可能降低效能。</string>
-    <string name="perf_fastpath">proot 快速路徑</string>
-    <string name="perf_fastpath_needs_seccomp">需要 proot 的 seccomp 篩選器。</string>
-    <string name="perf_fastpath_hint">檔案查找更快，卡頓更少。如果程式找不到其檔案，請關閉此項。</string>
     <string name="perf_cursor_composite">在 gamescope 內繪製游標</string>
     <string name="perf_cursor_composite_hint">由 Gamescope 自行繪製指標，而不交給 Android。如要用控制器操控游標，請開啟此項。在手機上關閉會較快。下次工作階段生效。</string>
     <string name="perf_identity">會話身分</string>
@@ -1503,9 +1498,6 @@
     <string name="session_ended_desktop">桌面意外停止。請在錯誤報告中附上記錄，或再試一次。</string>
     <string name="session_ended_detail">結束狀態 %1$d · %2$s</string>
     <string name="session_ended_no_log">沒有記錄</string>
-    <plurals name="session_hint_enosys">
-        <item quantity="other">記錄顯示 %1$d 個「Function not implemented」錯誤：proot 的 seccomp 加速令此裝置上的一個輔助程式失敗。請嘗試 %2$s →「%3$s」（或「%4$s」），然後重新啟動。</item>
-    </plurals>
 
     <string name="mode_decky_plugins">插件</string>
     <string name="mode_decky_plugins_hint">安裝插件 ZIP，在下次 Steam 會話使用。</string>

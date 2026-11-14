@@ -49,6 +49,7 @@ elif a[:1] == ["shell"]:
             if "ls" in a: print(s["session"])
             elif a[-1].endswith("/device.txt"): print(s.get("report", ""))
             elif a[-1].endswith("/app.log"): print(s.get("app_log", ""))
+            elif a[-1].endswith("/session.log"): print(s.get("session_log", ""))
         else: print("package not debuggable")
 '''
 
@@ -114,15 +115,14 @@ class DeviceSmokeTest(unittest.TestCase):
                 self.assertEqual(1, result.returncode, result.stdout)
                 self.assertIn("could not launch", result.stdout)
 
-    def test_fast_path_requires_a_session_activation_log(self):
-        for active in (False, True):
-            with self.subTest(active=active):
-                result, _ = self.run_smoke(
-                    session="session", report="proot fast path (eligible) true",
-                    app_log="proot: fast path on (66 binds)" if active else "proot: fast path off - too many binds",
-                )
-                self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-                self.assertEqual(active, "PASS  proot fast path was on" in result.stdout)
+    def test_launcher_errors_in_the_session_log_fail_the_check(self):
+        healthy = "== chroot: /data/launch.sh\nchroot: skipped /sys/x: it cannot be created there\nchroot: guest exited with status 0"
+        result, _ = self.run_smoke(session="session", session_log=healthy)
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        self.assertIn("PASS  the session ran in the chroot", result.stdout)
+        result, _ = self.run_smoke(session="session", session_log=healthy + "\nchroot: cannot bind /dev/x to /dev/y: denied")
+        self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+        self.assertIn("launcher: chroot: cannot bind /dev/x", result.stdout)
 
     def test_session_name_remains_one_remote_argument(self):
         session = "x';id;#"

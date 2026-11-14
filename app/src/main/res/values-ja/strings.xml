@@ -595,11 +595,6 @@
     <string name="perf_fsync_hint">futex_waitvをユーザー空間で提供し、標準のProtonファイルのままProton自身のfsyncを実行します。パックが不要なため、SteamがProtonを更新してもすぐに動作し続けます。オンの間、Protonがfsyncを使わない一部のゲームを除き、ゲームはdroiddeck-esyncよりこちらを優先します。次回のセッションで有効になります。</string>
     <string name="perf_esync_hint">ゲームのWindowsスレッドが、wineserverとの往復通信の代わりにeventfdと共有メモリで互いを待機します。そのProtonビルド専用のdroiddeck-esyncパックを使用し、パックは自動的に取得されます。新しいProtonビルド用のパックが用意されるまでは、droiddeck-fsyncが代わりに使用されます。次回のセッションで有効になります。</string>
     <string name="perf_xalia_hint">Protonのコントローラーナビゲーション補助を無効にします。これはすべてのゲームでCPUを消費します。</string>
-    <string name="perf_seccomp">seccompなしでprootを実行</string>
-    <string name="perf_seccomp_hint">一部のカーネルで「システムコールが見つからない」エラーが解消される場合があります。パフォーマンスが低下する可能性があります。</string>
-    <string name="perf_fastpath">prootファストパス</string>
-    <string name="perf_fastpath_needs_seccomp">prootのseccompフィルターが必要です。</string>
-    <string name="perf_fastpath_hint">ファイル検索が速くなり、スタッターが減ります。プログラムがファイルを見つけられない場合は、これをオフにしてください。</string>
     <string name="perf_cursor_composite">gamescope内でカーソルを描画</string>
     <string name="perf_cursor_composite_hint">ポインターをAndroidに任せず、Gamescope自身が描画します。コントローラーで操作するカーソルにはオンにしてください。スマートフォンではオフの方が高速です。次回のセッションから適用されます。</string>
     <string name="perf_identity">セッションの識別情報</string>
@@ -1503,9 +1498,6 @@
     <string name="session_ended_desktop">デスクトップが予期せず停止しました。バグレポートにログを添付して共有するか、もう一度お試しください。</string>
     <string name="session_ended_detail">終了ステータス %1$d · %2$s</string>
     <string name="session_ended_no_log">ログなし</string>
-    <plurals name="session_hint_enosys">
-        <item quantity="other">ログに「Function not implemented」エラーが%1$d件あります。このデバイスでは、prootのseccomp高速化が補助プロセスの処理に失敗しています。%2$s →「%3$s」（または「%4$s」）を試してから、もう一度起動してください。</item>
-    </plurals>
 
     <string name="mode_decky_plugins">プラグイン</string>
     <string name="mode_decky_plugins_hint">次回のSteamセッション用にプラグインのzipをインストールします。</string>

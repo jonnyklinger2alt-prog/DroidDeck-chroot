@@ -690,6 +690,7 @@ class SessionActivity : ComponentActivity(), SurfaceHolder.Callback {
         if (!SessionState.running && SessionState.phase in setOf(SessionPhase.IDLE, SessionPhase.FAILED)) {
             val mode = intent.getStringExtra(SessionService.EXTRA_MODE) ?: SessionService.MODE_STEAM
             SessionState.programArgs = intent.getStringArrayExtra(SessionService.EXTRA_PROGRAM_ARGS)?.toList().orEmpty()
+            SessionState.desktopShell = intent.getStringExtra(SessionService.EXTRA_SHELL).orEmpty()
             SessionEvents.begin(this, mode, SessionPaths.label(mode, intent.getStringExtra(SessionService.EXTRA_PROGRAM)))
             SessionState.secondScreenAutoOpened = false
             SessionState.secondScreenProvisional = false
@@ -700,6 +701,7 @@ class SessionActivity : ComponentActivity(), SurfaceHolder.Callback {
         if (!SessionState.running && SessionState.phase in setOf(SessionPhase.IDLE, SessionPhase.FAILED)) {
             SessionState.program = intent.getStringExtra(SessionService.EXTRA_PROGRAM)
             SessionState.programArgs = intent.getStringArrayExtra(SessionService.EXTRA_PROGRAM_ARGS)?.toList().orEmpty()
+            SessionState.desktopShell = intent.getStringExtra(SessionService.EXTRA_SHELL).orEmpty()
             SessionState.steamUi = intent.getStringExtra(SessionService.EXTRA_STEAM_UI)
             SessionState.steamUrl = intent.getStringExtra(SessionService.EXTRA_STEAM_URL)
             SessionState.steamVr = intent.getBooleanExtra(EXTRA_STEAMVR, false)
@@ -846,6 +848,7 @@ class SessionActivity : ComponentActivity(), SurfaceHolder.Callback {
             val needRuntime = repair || com.droiddeck.launcher.runtime.LinuxRuntimeInstaller.installedVersion(this) == null
             val needResume = !needRuntime && com.droiddeck.launcher.runtime.DesktopCatalog.interrupted(this).isNotEmpty()
             val needDesktop = intent.getStringExtra(SessionService.EXTRA_MODE) == SessionService.MODE_DESKTOP &&
+                intent.getStringExtra(SessionService.EXTRA_SHELL) != SessionService.SHELL_PHOSH &&
                 (repair || !com.droiddeck.launcher.runtime.DesktopCatalog.desktopInstalled(this))
             val program = intent.getStringExtra(SessionService.EXTRA_PROGRAM)
             val protonUser = (intent.getStringExtra(SessionService.EXTRA_MODE) ?: SessionService.MODE_STEAM) == SessionService.MODE_STEAM ||
@@ -2593,7 +2596,6 @@ class SessionActivity : ComponentActivity(), SurfaceHolder.Callback {
         presentationFaultHint()?.let { return it }
         if (log == null || !log.isFile) return null
         return try {
-            var enosys = 0
             var fexMissing = false
             val size = log.length()
             val text = java.io.RandomAccessFile(log, "r").use { f ->
@@ -2604,7 +2606,6 @@ class SessionActivity : ComponentActivity(), SurfaceHolder.Callback {
                 String(bytes, Charsets.ISO_8859_1)
             }
             text.lineSequence().forEach { line ->
-                if (line.contains("Function not implemented")) enosys++
                 if (line.contains(FEX_MISSING)) fexMissing = true
             }
             val steamSetup = com.droiddeck.launcher.session.SteamClientSetupFailure.find(text.lineSequence())
@@ -2626,9 +2627,6 @@ class SessionActivity : ComponentActivity(), SurfaceHolder.Callback {
             } else if (fexMissing) {
                 val what = com.droiddeck.launcher.frontend.Library.nameForProgram(SessionState.program) ?: getString(R.string.session_end_program)
                 EndHint(getString(R.string.session_end_fex_missing, what), evenOnSuccess = true)
-            } else if (enosys >= 8) {
-                EndHint(resources.getQuantityString(R.plurals.session_hint_enosys, enosys, enosys,
-                    getString(R.string.perf_title), getString(R.string.perf_seccomp), getString(R.string.perf_xalia)))
             } else null
         } catch (e: Exception) {
             null
@@ -3019,6 +3017,7 @@ class SessionActivity : ComponentActivity(), SurfaceHolder.Callback {
             scrollLayer = false,
             steamSession = SessionState.mode == SessionService.MODE_STEAM,
             steamDesktopUi = SessionState.steamUi == "desktop",
+            touchShell = SessionState.phoshShell,
         )) == com.droiddeck.launcher.input.TouchRouter.Route.TOUCHPAD
         val mode = com.droiddeck.launcher.input.TouchGestureConfig.gamescopeRelativeMouse(wanted, mouseAttached(), touchpadRoute)
         if (appliedRelativeMouseMode == mode) return
@@ -3867,7 +3866,7 @@ class SessionActivity : ComponentActivity(), SurfaceHolder.Callback {
     private fun usingTouchpad(): Boolean = when (routedTouchMode) {
         SessionPrefs.TOUCH_PAD -> true
         SessionPrefs.TOUCH_DIRECT -> false
-        else -> SessionState.mode != SessionService.MODE_STEAM || SessionState.steamUi == "desktop"
+        else -> (SessionState.mode != SessionService.MODE_STEAM && !SessionState.phoshShell) || SessionState.steamUi == "desktop"
     }
 
     private fun drawerTouchMode(): String = when (routedTouchMode) {
@@ -4033,6 +4032,7 @@ class SessionActivity : ComponentActivity(), SurfaceHolder.Callback {
             scrollLayer = scrollTouchGesture,
             steamSession = SessionState.mode == SessionService.MODE_STEAM,
             steamDesktopUi = SessionState.steamUi == "desktop",
+            touchShell = SessionState.phoshShell,
         )
         val route = com.droiddeck.launcher.input.TouchRouter.decide(snapshot)
         if (route != touchRoute) {

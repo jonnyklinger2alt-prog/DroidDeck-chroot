@@ -1,0 +1,43 @@
+#!/bin/bash
+set -u
+
+step() { echo "== phosh: $*"; }
+
+phosh_bin() {
+  local candidate
+  for candidate in /usr/libexec/phosh /usr/bin/phosh; do
+    [ -x "$candidate" ] && { echo "$candidate"; return 0; }
+  done
+  return 1
+}
+
+if ! command -v phoc >/dev/null 2>&1 || ! phosh_bin >/dev/null; then
+  step "installing Phosh from Ubuntu (first start only, a few hundred MB)"
+  apt=(env DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::=--force-confold)
+  droiddeck-root "${apt[@]}" update || { step "apt-get update failed"; exit 69; }
+  droiddeck-root "${apt[@]}" install -y --no-install-recommends phosh phoc gsettings-desktop-schemas adwaita-icon-theme \
+    || { step "installing phosh and phoc failed"; exit 69; }
+  droiddeck-root "${apt[@]}" install -y --no-install-recommends squeekboard \
+    || step "squeekboard is not available; Android's keyboard stays the way to type"
+fi
+shell=$(phosh_bin) || { step "phosh is not installed"; exit 66; }
+
+export XDG_CURRENT_DESKTOP=Phosh:GNOME XDG_SESSION_DESKTOP=phosh XDG_SESSION_TYPE=wayland
+export GDK_BACKEND=wayland QT_QPA_PLATFORM=wayland
+config=()
+[ -f /usr/share/phosh/phoc.ini ] && config=(-C /usr/share/phosh/phoc.ini)
+launch=(phoc "${config[@]}" -E "$shell")
+if [ -z "${DBUS_SESSION_BUS_ADDRESS:-}" ] && command -v dbus-run-session >/dev/null 2>&1; then
+  launch=(dbus-run-session -- "${launch[@]}")
+fi
+
+step "starting $shell in phoc"
+started=$(date +%s)
+"${launch[@]}"
+rc=$?
+if [ "$rc" != 0 ] && [ -z "${WLR_RENDERER:-}" ] && [ $(( $(date +%s) - started )) -lt 15 ]; then
+  step "phoc exited with $rc right away; retrying with software rendering"
+  export WLR_RENDERER=pixman
+  exec "${launch[@]}"
+fi
+exit "$rc"

@@ -472,7 +472,9 @@ if [ -z "${BL_INSIDE:-}" ]; then
   if [ "$mode" = lxqt ]; then
     step "starting the desktop"
     start_agent --no-focus
-    [ -x /usr/local/bin/droiddeck-desktop ] || { echo "== the desktop package is not installed"; exit 66; }
+    phosh=0
+    [ "${BL_DESKTOP_SHELL:-}" = phosh ] && phosh=1
+    [ "$phosh" = 1 ] || [ -x /usr/local/bin/droiddeck-desktop ] || { echo "== the desktop package is not installed"; exit 66; }
     if command -v dbus-daemon >/dev/null 2>&1 && command -v droiddeck-netmanager >/dev/null 2>&1; then
       write_system_bus_config
       dbus-daemon --config-file=/usr/local/share/droiddeck/system-bus.conf --nofork --nopidfile &
@@ -492,6 +494,7 @@ if [ -z "${BL_INSIDE:-}" ]; then
       echo "== desktop cores: $cores (the desktop and every program started from it)"
       taskset -cp "$cores" $$ >/dev/null 2>&1 || echo "== desktop cores: not allowed right now, every core"
     fi
+    [ "$phosh" = 1 ] && exec /usr/local/bin/droiddeck-phosh
     exec /usr/local/bin/droiddeck-desktop
   fi
   width=${BL_WIDTH:-1280}

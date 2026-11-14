@@ -41,7 +41,7 @@ class ProtonMenuAutoTest {
     @Before fun setup() {
         activity = Robolectric.buildActivity(Activity::class.java).setup().get()
         root = LinuxRuntime.rootDir(activity)
-        for (path in listOf("usr/bin/gamescope", "usr/local/bin/droiddeck-session", "opt/android-host/proot", "opt/android-host/loader")) {
+        for (path in listOf("usr/bin/gamescope", "usr/local/bin/droiddeck-session")) {
             File(root, path).apply { parentFile!!.mkdirs(); writeText("") }
         }
         AutoComponents.online = { true }

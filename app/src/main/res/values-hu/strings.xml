@@ -597,11 +597,6 @@
     <string name="perf_fsync_hint">A Proton saját fsyncjét futtatja az eredeti Proton-fájlokon, felhasználói szinten biztosított futex_waitv-vel, így nincs szükség csomagra, és azonnal működik, amint a Steam frissíti a Protont. Amíg be van kapcsolva, a játékok ezt használják a droiddeck-esync előtt, kivéve azt a néhányat, amelyet a Proton kizár az fsyncből. A következő munkamenettől érvényes.</string>
     <string name="perf_esync_hint">A játékok Windows-szálai eventfd-n és megosztott memórián keresztül várnak egymásra, a wineserveren át vezető körök helyett. Egy az adott Proton buildhez készült droiddeck-esync csomagot használ; a csomagok automatikusan letöltődnek. Amíg egy új Proton buildhez nincs csomag, a droiddeck-fsync helyettesíti. A következő munkamenettől érvényes.</string>
     <string name="perf_xalia_hint">Kikapcsolja a Proton kontroller-navigációs segédjét, amely minden játékban CPU-t használ.</string>
-    <string name="perf_seccomp">A proot futtatása seccomp nélkül</string>
-    <string name="perf_seccomp_hint">Javíthatja a hiányzó szisztémahívás-hibákat egyes kerneleken. Csökkentheti a teljesítményt.</string>
-    <string name="perf_fastpath">proot gyors útvonal</string>
-    <string name="perf_fastpath_needs_seccomp">A proot seccomp-szűrőjét igényli.</string>
-    <string name="perf_fastpath_hint">Gyorsabb fájlkeresés és kevesebb akadás. Kapcsolja ki, ha egy program nem találja a fájljait.</string>
     <string name="perf_cursor_composite">A kurzor rajzolása a gamescope-on belül</string>
     <string name="perf_cursor_composite_hint">A Gamescope maga rajzolja a mutatót ahelyett, hogy átadná az Androidnak. Kapcsolja be kontrollerrel vezérelt kurzorhoz. Telefonon kikapcsolva gyorsabb. A következő munkamenettől érvényes.</string>
     <string name="perf_identity">Munkamenet-azonosítás</string>
@@ -1519,10 +1514,6 @@
     <string name="session_ended_desktop">Az asztal váratlanul leállt. Ossza meg a naplókat egy hibajelentésben, vagy próbálja újra.</string>
     <string name="session_ended_detail">Kilépési állapot: %1$d · %2$s</string>
     <string name="session_ended_no_log">nincs napló</string>
-    <plurals name="session_hint_enosys">
-        <item quantity="one">A napló %1$d „Function not implemented” hibát tartalmaz: a proot seccomp-gyorsítása elutasít egy segédfolyamatot ezen az eszközön. Próbálja ki ezt: %2$s → „%3$s” (vagy „%4$s”), majd indítsa el újra.</item>
-        <item quantity="other">A napló %1$d „Function not implemented” hibát tartalmaz: a proot seccomp-gyorsítása elutasít egy segédfolyamatot ezen az eszközön. Próbálja ki ezt: %2$s → „%3$s” (vagy „%4$s”), majd indítsa el újra.</item>
-    </plurals>
 
     <string name="mode_decky_plugins">Bővítmények</string>
     <string name="mode_decky_plugins_hint">Telepítsen egy bővítmény ZIP-et a következő Steam-munkamenethez.</string>

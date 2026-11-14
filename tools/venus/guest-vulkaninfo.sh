@@ -7,9 +7,8 @@ COMPAT=${1:-1}
 A=/c/Users/derab/tools/platform-tools/adb.exe
 PKG=com.droiddeck.launcher
 F=/data/user/0/$PKG/files
-APK=$($A shell pm path $PKG | head -1 | tr -d '\r' | sed 's/^package://')
-L=${APK%/base.apk}/lib/arm64
-$A exec-out "run-as $PKG sh -c 'PROOT_TMP_DIR=/data/user/0/$PKG/cache PROOT_LOADER=$L/libproot-loader.so \
-  $L/libproot.so -r $F/linuxfs -w /root -b /dev -b /proc -b /sys -b $F /usr/bin/env -i HOME=/root \
+LAUNCH=/data/user/0/$PKG/no_backup/guest-runtime/chroot/launch.sh
+U=$($A shell stat -c %u $F | tr -d '\r')
+$A exec-out "su -c 'sh $LAUNCH --root $F/linuxfs --uid $U --gid $U -b /dev -b /proc -b /sys -b $F /usr/bin/env -i HOME=/root \
   PATH=/usr/bin:/bin DROIDDECK_MALI_COMPAT=$COMPAT VK_ICD_FILENAMES=$F/venus/virtio_icd.json VN_DEBUG=vtest \
   VTEST_SOCKET_NAME=$F/venus/vtest.sock vulkaninfo 2>&1'"

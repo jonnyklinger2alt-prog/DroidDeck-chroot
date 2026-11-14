@@ -96,7 +96,7 @@ object BattleNetInstall {
     internal fun run(context: Context, args: List<String>, cancelled: AtomicBoolean?, onLine: (String) -> Unit): Int =
         GuestCommand.run(
             context, listOf(BattleNet.PROGRAM) + args, logName = "battlenet-agent",
-            extraBinds = binds(context), fastPath = true, cancelled = cancelled, onLine = onLine,
+            extraBinds = binds(context), cancelled = cancelled, onLine = onLine,
         )
 
     fun enqueue(context: Context, item: CatalogItem, folder: File, update: Boolean = false) {

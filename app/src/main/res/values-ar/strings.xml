@@ -605,11 +605,6 @@
     <string name="perf_fsync_hint">يشغّل خاصية fsync المدمجة في Proton على ملفات Proton الأصلية، مع توفير futex_waitv في مساحة المستخدم، فلا يحتاج إلى حزمة ويستمر في العمل لحظة تحديث Steam لـ Proton. أثناء تفعيله، تستخدمه الألعاب قبل droiddeck-esync، باستثناء القليل الذي يبقيه Proton معطّلًا لـ fsync. يُطبَّق في الجلسة التالية.</string>
     <string name="perf_esync_hint">تنتظر مؤشرات ترابط Windows في اللعبة بعضها بعضًا عبر eventfd والذاكرة المشتركة، بدلًا من رحلات ذهاب وعودة عبر wineserver. يستخدم حزمة droiddeck-esync مُعدّة لإصدار Proton ذاك بالضبط؛ وتُجلَب الحزم تلقائيًا. وإلى أن تتوفر حزمة لإصدار Proton جديد، يحل droiddeck-fsync محله. يُطبَّق في الجلسة التالية.</string>
     <string name="perf_xalia_hint">يعطّل مساعد التنقّل بوحدة التحكم في Proton، الذي يستهلك CPU في كل لعبة.</string>
-    <string name="perf_seccomp">تشغيل proot بلا seccomp</string>
-    <string name="perf_seccomp_hint">قد يُصلح أخطاء استدعاءات النظام (syscall) الناقصة على بعض الأنوية. قد يقلّل الأداء.</string>
-    <string name="perf_fastpath">مسار proot السريع</string>
-    <string name="perf_fastpath_needs_seccomp">يحتاج إلى مرشّح seccomp في proot.</string>
-    <string name="perf_fastpath_hint">عمليات بحث أسرع عن الملفات وتقطّع أقل. أوقفه إذا تعذّر على برنامج العثور على ملفاته.</string>
     <string name="perf_cursor_composite">رسم المؤشر داخل gamescope</string>
     <string name="perf_cursor_composite_hint">يرسم Gamescope المؤشر بنفسه بدلًا من تسليمه إلى Android. فعّله لمؤشر تتحكّم فيه وحدة التحكم. الإيقاف أسرع على الهاتف. يُطبَّق في الجلسة التالية.</string>
     <string name="perf_identity">هوية الجلسة</string>
@@ -1583,14 +1578,6 @@
     <string name="session_ended_desktop">توقّف سطح المكتب بشكل غير متوقَّع. شارِك السجلات مع بلاغ عن الخطأ، أو حاوِل مرة أخرى.</string>
     <string name="session_ended_detail">حالة الخروج %1$d · %2$s</string>
     <string name="session_ended_no_log">لا يوجد سجل</string>
-    <plurals name="session_hint_enosys">
-        <item quantity="zero">يُظهر السجل %1$d خطأ من نوع «Function not implemented»: تسريع seccomp في proot يتسبّب في فشل أداة مساعدة على هذا الجهاز. جرِّب %2$s → «%3$s» (أو «%4$s») وابدأ من جديد.</item>
-        <item quantity="one">يُظهر السجل خطأً واحدًا من نوع «Function not implemented»: تسريع seccomp في proot يتسبّب في فشل أداة مساعدة على هذا الجهاز. جرِّب %2$s → «%3$s» (أو «%4$s») وابدأ من جديد.</item>
-        <item quantity="two">يُظهر السجل خطأين من نوع «Function not implemented»: تسريع seccomp في proot يتسبّب في فشل أداة مساعدة على هذا الجهاز. جرِّب %2$s → «%3$s» (أو «%4$s») وابدأ من جديد.</item>
-        <item quantity="few">يُظهر السجل %1$d أخطاء من نوع «Function not implemented»: تسريع seccomp في proot يتسبّب في فشل أداة مساعدة على هذا الجهاز. جرِّب %2$s → «%3$s» (أو «%4$s») وابدأ من جديد.</item>
-        <item quantity="many">يُظهر السجل %1$d خطأً من نوع «Function not implemented»: تسريع seccomp في proot يتسبّب في فشل أداة مساعدة على هذا الجهاز. جرِّب %2$s → «%3$s» (أو «%4$s») وابدأ من جديد.</item>
-        <item quantity="other">يُظهر السجل %1$d خطأ من نوع «Function not implemented»: تسريع seccomp في proot يتسبّب في فشل أداة مساعدة على هذا الجهاز. جرِّب %2$s → «%3$s» (أو «%4$s») وابدأ من جديد.</item>
-    </plurals>
 
     <string name="mode_decky_plugins">الإضافات</string>
     <string name="mode_decky_plugins_hint">ثبِّت ملف ZIP لإضافة في جلسة Steam التالية.</string>

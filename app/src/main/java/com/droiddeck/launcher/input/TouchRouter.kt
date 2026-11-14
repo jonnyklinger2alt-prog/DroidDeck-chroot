@@ -11,6 +11,7 @@ object TouchRouter {
         val scrollLayer: Boolean,
         val steamSession: Boolean,
         val steamDesktopUi: Boolean,
+        val touchShell: Boolean = false,
     )
 
     fun decide(s: Snapshot): Route {
@@ -26,6 +27,6 @@ object TouchRouter {
     private fun touchpad(s: Snapshot): Boolean = when (s.mode) {
         SessionPrefs.TOUCH_PAD -> true
         SessionPrefs.TOUCH_DIRECT -> false
-        else -> !s.steamSession || s.steamDesktopUi
+        else -> (!s.steamSession && !s.touchShell) || s.steamDesktopUi
     }
 }

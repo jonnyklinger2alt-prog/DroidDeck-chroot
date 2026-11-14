@@ -48,9 +48,7 @@ def main(argv):
     if argv[1] == "--check":
         return 0
     env = dict(os.environ)
-    for name in ("LD_PRELOAD", "PROOT_FASTPATH", "DROIDDECK_ROOT_SOCKET"):
-        env.pop(name, None)
-    for name in [k for k in env if k.startswith("PROOT_")]:
+    for name in ("LD_PRELOAD", "DROIDDECK_ROOT_SOCKET"):
         env.pop(name, None)
     try:
         cwd = os.getcwd()

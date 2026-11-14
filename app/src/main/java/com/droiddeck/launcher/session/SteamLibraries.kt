@@ -12,7 +12,6 @@ import org.json.JSONObject
 /** Steam libraries the user added beside the internal one and the card library, each a folder of its own. */
 object SteamLibraries {
     const val GUEST_ROOT = "/mnt/droiddeck-lib"
-    // Each library costs a bind per redirected tool and prefix folder; the PRoot fast path holds 256 in all.
     const val MAX = 4
     private val lock = Any()
 

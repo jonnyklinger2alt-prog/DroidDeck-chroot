@@ -746,27 +746,11 @@ object SessionPrefs {
 
     fun gameThreadHints(context: Context): Boolean = prefs(context).getBoolean("gameThreadHints", true)
 
-    fun prootNoSeccomp(context: Context): Boolean = prefs(context).getBoolean("prootNoSeccomp", false)
-
-    fun setProotNoSeccomp(context: Context, on: Boolean) {
-        prefs(context).edit().putBoolean("prootNoSeccomp", on).apply()
-    }
-
-    fun prootFastPath(context: Context): Boolean = prefs(context).getBoolean("prootFastPath", true)
-
-    fun setProotFastPath(context: Context, on: Boolean) {
-        prefs(context).edit().putBoolean("prootFastPath", on).apply()
-    }
-
     fun cursorComposite(context: Context): Boolean = prefs(context).getBoolean("cursorComposite", false)
 
     fun setCursorComposite(context: Context, on: Boolean) {
         prefs(context).edit().putBoolean("cursorComposite", on).apply()
     }
-
-    @JvmStatic
-    fun allowStockProot(context: Context): Boolean =
-        context.getExternalFilesDir(null)?.let { File(it, "droiddeck-stock-proot").isFile } == true
 
     const val DEFAULT_GUEST_HOSTNAME = "DroidDeck"
 

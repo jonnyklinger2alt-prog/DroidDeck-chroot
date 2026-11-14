@@ -210,6 +210,7 @@ class FrontEndActions(
     val onEpicLauncher: () -> Unit = {},
     val onUninstallEpicLauncher: () -> Unit = {},
     val onDesktop: () -> Unit,
+    val onMobile: () -> Unit = {},
     val onEmulator: (Library.Emulator) -> Unit,
     val onFlatpakApp: (String, String) -> Unit = { _, _ -> },
     val onUserApp: (com.droiddeck.launcher.runtime.UserApps.App) -> Unit = {},

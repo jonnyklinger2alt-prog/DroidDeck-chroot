@@ -16,7 +16,7 @@ class GameFileSyncTest {
     @Test fun syncUsesFreshInstalledManifestsAndStopsWhenDisabled() {
         val context = RuntimeEnvironment.getApplication()
         val root = LinuxRuntime.rootDir(context)
-        listOf("usr/bin/gamescope", LinuxRuntime.SESSION_SCRIPT.removePrefix("/"), "opt/android-host/proot", "opt/android-host/loader").forEach { path ->
+        listOf("usr/bin/gamescope", LinuxRuntime.SESSION_SCRIPT.removePrefix("/")).forEach { path ->
             File(root, path).apply { parentFile!!.mkdirs(); writeText("") }
         }
         SessionPrefs.setGameStorage(context, SessionPrefs.GAME_STORAGE_OFF, "")

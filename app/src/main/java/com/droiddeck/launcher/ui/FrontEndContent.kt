@@ -270,6 +270,10 @@ private fun Content(
         DesktopPage(s, a, modifier, onSelect)
         return
     }
+    if (selected == "mobile") {
+        MobilePage(s, a, modifier)
+        return
+    }
     if (selected == "android-apps" && s.isHomeApp) {
         AndroidAppsPage(s, modifier, onAndroidAppClick)
         return

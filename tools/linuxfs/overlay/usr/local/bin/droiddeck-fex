@@ -777,7 +777,7 @@ def want_fex():
             write_if_changed(STATUS_FILE, json.dumps(status, indent=2) + "\n")
 
 
-XATTR_ONLY_NOISE = re.compile(r"^(proot (error|warning)|Failed to exec memfd|Further error messages of this type are suppressed)")
+XATTR_ONLY_NOISE = re.compile(r"^(Failed to exec memfd|Further error messages of this type are suppressed)")
 
 
 def only_xattrs_failed(errors):

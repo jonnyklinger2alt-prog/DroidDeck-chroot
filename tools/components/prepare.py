@@ -13,7 +13,7 @@ TREES = ['app/src/main/assets/linuxfs', 'app/src/main/assets/directaudio',
          'app/src/main/assets/droiddeck-esync', 'app/build/prepared-assets',
          'app/build/component-records']
 LIBRARIES = ['app/src/main/jniLibs/arm64-v8a/' + name for name in
-             ('libproot.so', 'libproot-loader.so', 'libdirectaudiorelay.so')]
+             ('libdirectaudiorelay.so',)]
 MANIFEST = 'app/build/prepared-components.json'
 
 

@@ -646,11 +646,6 @@
     <string name="perf_fsync_hint">Runs Proton\'s own fsync on the stock Proton files, with futex_waitv supplied in userspace, so it needs no pack and keeps working the moment Steam updates Proton. While it is on, games use it ahead of droiddeck-esync, except the few Proton keeps off fsync. Applies next session.</string>
     <string name="perf_esync_hint">Games\' Windows threads wait on each other through eventfd and shared memory instead of round trips through wineserver. Uses a droiddeck-esync pack made for that exact Proton build; packs are fetched automatically. Until one exists for a new Proton build, droiddeck-fsync stands in. Applies next session.</string>
     <string name="perf_xalia_hint">Disables Proton\'s gamepad navigation helper, which costs CPU in every game.</string>
-    <string name="perf_seccomp">Run proot without seccomp</string>
-    <string name="perf_seccomp_hint">May fix missing-syscall errors on some kernels. Can reduce performance.</string>
-    <string name="perf_fastpath">proot fast path</string>
-    <string name="perf_fastpath_needs_seccomp">Needs proot\'s seccomp filter.</string>
-    <string name="perf_fastpath_hint">Faster file lookups and less stutter. Turn off if a program can\'t find its files.</string>
     <string name="perf_cursor_composite">Draw the cursor inside gamescope</string>
     <string name="perf_cursor_composite_hint">Gamescope paints the pointer itself instead of handing it to Android. Turn on for a controller-driven cursor. Off is faster on a phone. Applies next session.</string>
     <string name="perf_identity">Session identity</string>
@@ -1394,6 +1389,9 @@
     <string name="rail_steam">Steam</string>
     <string name="rail_games">Library</string>
     <string name="rail_desktop">Desktop</string>
+    <string name="rail_mobile">Mobile</string>
+    <string name="mobile_about">Phosh, the touch-first phone shell from GNOME mobile, running on the Linux runtime. The first start downloads and installs Phosh from Ubuntu (a few hundred MB), so it needs a connection and root access.</string>
+    <string name="mobile_open">Open Phosh</string>
     <string name="rail_store">Store</string>
     <string name="rail_components">Components</string>
     <string name="rail_apps">Apps</string>
@@ -1680,10 +1678,6 @@
     <string name="session_ended_desktop">The desktop stopped unexpectedly. Share the logs with a bug report, or try again.</string>
     <string name="session_ended_detail">Exit status %1$d · %2$s</string>
     <string name="session_ended_no_log">no log</string>
-    <plurals name="session_hint_enosys">
-        <item quantity="one">The log shows %1$d \"Function not implemented\" error: proot\'s seccomp acceleration is failing a helper on this device. Try %2$s → \"%3$s\" (or \"%4$s\") and start again.</item>
-        <item quantity="other">The log shows %1$d \"Function not implemented\" errors: proot\'s seccomp acceleration is failing a helper on this device. Try %2$s → \"%3$s\" (or \"%4$s\") and start again.</item>
-    </plurals>
 
     <string name="mode_decky_plugins">Plugins</string>
     <string name="mode_decky_plugins_hint">Install a plugin ZIP for the next Steam session.</string>

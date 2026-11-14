@@ -50,6 +50,7 @@ import androidx.compose.material.icons.outlined.Apps
 import androidx.compose.material.icons.outlined.DesktopWindows
 import androidx.compose.material.icons.outlined.Layers
 import androidx.compose.material.icons.outlined.LocalMall
+import androidx.compose.material.icons.outlined.Smartphone
 import androidx.compose.material.icons.outlined.SportsEsports
 import androidx.compose.material.icons.outlined.Storefront
 import androidx.compose.material.icons.outlined.SystemUpdate
@@ -123,7 +124,7 @@ internal fun BottomBar(
 internal fun navigationKeys(s: FrontEndState) = buildList {
     add("steam"); add("games")
     if (s.gameStoresEnabled) add("stores")
-    add("desktop"); add("components")
+    add("desktop"); add("mobile"); add("components")
     if (s.isHomeApp) add("android-apps")
     add("setup"); add("updates")
 }
@@ -156,7 +157,7 @@ internal fun SideRail(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.width(if (iconOnly) 64.dp else 92.dp).background(colors.surface).padding(vertical = if (compact) 8.dp else 12.dp),
     ) {
-        val count = 6 + (if (s.gameStoresEnabled) 1 else 0) + (if (s.isHomeApp) 1 else 0)
+        val count = 7 + (if (s.gameStoresEnabled) 1 else 0) + (if (s.isHomeApp) 1 else 0)
         BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
         val fit = (maxHeight / count - 4.dp).coerceIn(44.dp, if (iconOnly) 48.dp else if (compact) 52.dp else 60.dp)
         val shown = Hops.railPreview ?: selected
@@ -196,6 +197,7 @@ internal fun railLabelIcon(key: String): Pair<Int, ImageVector> = when (key) {
     "games" -> R.string.rail_games to Icons.Outlined.VideoLibrary
     "stores" -> R.string.rail_stores to Icons.Outlined.LocalMall
     "desktop" -> R.string.rail_desktop to Icons.Outlined.DesktopWindows
+    "mobile" -> R.string.rail_mobile to Icons.Outlined.Smartphone
     "components" -> R.string.rail_components to Icons.Outlined.Layers
     "android-apps" -> R.string.rail_apps to Icons.Outlined.Apps
     "setup" -> R.string.rail_setup to Icons.Outlined.Tune

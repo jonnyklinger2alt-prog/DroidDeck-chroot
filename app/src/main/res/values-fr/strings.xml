@@ -599,11 +599,6 @@
     <string name="perf_fsync_hint">Exécute le fsync propre à Proton sur les fichiers Proton d\'origine, avec futex_waitv fourni en espace utilisateur : aucun pack n\'est nécessaire et il continue de fonctionner dès que Steam met à jour Proton. Lorsqu\'il est activé, les jeux l\'utilisent avant droiddeck-esync, sauf les quelques-uns que Proton exclut de fsync. Prendra effet à la prochaine session.</string>
     <string name="perf_esync_hint">Les threads Windows des jeux s\'attendent mutuellement via eventfd et la mémoire partagée au lieu de faire des allers-retours par wineserver. Utilise un pack droiddeck-esync conçu pour cette version exacte de Proton ; les packs sont récupérés automatiquement. Tant qu\'il n\'en existe pas pour une nouvelle version de Proton, droiddeck-fsync prend le relais. Prendra effet à la prochaine session.</string>
     <string name="perf_xalia_hint">Désactive l\'assistant de navigation à la manette de Proton, qui consomme du CPU dans chaque jeu.</string>
-    <string name="perf_seccomp">Exécuter proot sans seccomp</string>
-    <string name="perf_seccomp_hint">Peut corriger certaines erreurs d\'appels système manquants sur certains noyaux, mais peut réduire les performances.</string>
-    <string name="perf_fastpath">Chemin rapide proot</string>
-    <string name="perf_fastpath_needs_seccomp">Nécessite le filtre seccomp de proot.</string>
-    <string name="perf_fastpath_hint">Recherche de fichiers plus rapide, moins de saccades. Désactivez cette option si un programme ne trouve pas ses fichiers.</string>
     <string name="perf_cursor_composite">Dessiner le curseur dans gamescope</string>
     <string name="perf_cursor_composite_hint">Gamescope dessine lui-même le pointeur au lieu de le confier à Android. Activez pour un curseur piloté à la manette. Désactivé, c\'est plus rapide sur un téléphone. Prendra effet à la prochaine session.</string>
     <string name="perf_identity">Identité de la session</string>
@@ -1535,11 +1530,6 @@
     <string name="session_ended_desktop">Le bureau s\'est arrêté de manière inattendue. Partagez les journaux dans un rapport de bug, ou réessayez.</string>
     <string name="session_ended_detail">Code de sortie %1$d · %2$s</string>
     <string name="session_ended_no_log">aucun journal</string>
-    <plurals name="session_hint_enosys">
-        <item quantity="one">Le journal indique %1$d erreur « Function not implemented » : l\'accélération seccomp de proot fait échouer un utilitaire sur cet appareil. Essayez %2$s → « %3$s » (ou « %4$s ») et relancez.</item>
-        <item quantity="many">Le journal indique %1$d erreurs « Function not implemented » : l\'accélération seccomp de proot fait échouer un utilitaire sur cet appareil. Essayez %2$s → « %3$s » (ou « %4$s ») et relancez.</item>
-        <item quantity="other">Le journal indique %1$d erreurs « Function not implemented » : l\'accélération seccomp de proot fait échouer un utilitaire sur cet appareil. Essayez %2$s → « %3$s » (ou « %4$s ») et relancez.</item>
-    </plurals>
 
     <string name="mode_decky_plugins">Plugins</string>
     <string name="mode_decky_plugins_hint">Installez un ZIP de plugin pour la prochaine session Steam.</string>

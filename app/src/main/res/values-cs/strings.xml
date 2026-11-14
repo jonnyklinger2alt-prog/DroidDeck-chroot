@@ -601,11 +601,6 @@
     <string name="perf_fsync_hint">Spouští vlastní fsync Protonu na původních souborech Protonu, s futex_waitv dodaným v uživatelském prostoru, takže nepotřebuje balíček a funguje i hned po aktualizaci Protonu Steamem. Když je zapnuto, hry ho používají před droiddeck-esync, kromě těch pár, které Proton u fsync nechává vypnuté. Použije se od příští relace.</string>
     <string name="perf_esync_hint">Vlákna Windows her na sebe čekají přes eventfd a sdílenou paměť místo zpráv přes wineserver. Používá balíček droiddeck-esync vytvořený přesně pro dané sestavení Protonu; balíčky se stahují automaticky. Dokud pro nové sestavení Protonu žádný neexistuje, zastupuje ho droiddeck-fsync. Použije se od příští relace.</string>
     <string name="perf_xalia_hint">Vypne pomocníka Protonu pro navigaci gamepadem, který stojí výkon CPU v každé hře.</string>
-    <string name="perf_seccomp">Spustit proot bez seccomp</string>
-    <string name="perf_seccomp_hint">Může opravit chyby s chybějícími systémovými voláními na některých jádrech. Může snížit výkon.</string>
-    <string name="perf_fastpath">Rychlá cesta proot</string>
-    <string name="perf_fastpath_needs_seccomp">Vyžaduje filtr seccomp od proot.</string>
-    <string name="perf_fastpath_hint">Rychlejší vyhledávání souborů a méně zadrhávání. Vypněte, pokud program nemůže najít své soubory.</string>
     <string name="perf_cursor_composite">Kreslit kurzor v gamescope</string>
     <string name="perf_cursor_composite_hint">Gamescope kreslí ukazatel sám, místo aby ho předal Androidu. Zapněte pro kurzor ovládaný ovladačem. Vypnuto je na telefonu rychlejší. Použije se od příští relace.</string>
     <string name="perf_identity">Identita relace</string>
@@ -1551,12 +1546,6 @@
     <string name="session_ended_desktop">Plocha neočekávaně skončila. Přiložte logy k hlášení chyby, nebo zkuste znovu.</string>
     <string name="session_ended_detail">Návratový kód %1$d · %2$s</string>
     <string name="session_ended_no_log">žádný log</string>
-    <plurals name="session_hint_enosys">
-        <item quantity="one">V logu je %1$d chyba „Function not implemented“: akcelerace seccomp v proot zde selhává u pomocné funkce na tomto zařízení. Zkuste %2$s → „%3$s“ (nebo „%4$s“) a spusťte to znovu.</item>
-        <item quantity="few">V logu jsou %1$d chyby „Function not implemented“: akcelerace seccomp v proot zde selhává u pomocné funkce na tomto zařízení. Zkuste %2$s → „%3$s“ (nebo „%4$s“) a spusťte to znovu.</item>
-        <item quantity="many">V logu je %1$d chyb „Function not implemented“: akcelerace seccomp v proot zde selhává u pomocné funkce na tomto zařízení. Zkuste %2$s → „%3$s“ (nebo „%4$s“) a spusťte to znovu.</item>
-        <item quantity="other">V logu je %1$d chyb „Function not implemented“: akcelerace seccomp v proot zde selhává u pomocné funkce na tomto zařízení. Zkuste %2$s → „%3$s“ (nebo „%4$s“) a spusťte to znovu.</item>
-    </plurals>
 
     <string name="mode_decky_plugins">Pluginy</string>
     <string name="mode_decky_plugins_hint">Nainstalujte ZIP s pluginem pro další relaci Steamu.</string>

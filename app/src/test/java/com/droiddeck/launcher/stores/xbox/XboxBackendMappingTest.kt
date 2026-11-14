@@ -8,12 +8,12 @@ class XboxBackendMappingTest {
     private fun mapping(permissions: String = "r-xp", inode: Long = 42, name: String = path) =
         "7a0000-7b0000 $permissions 00001000 00:31 $inode $name\n"
 
-    @Test fun prootLoaderDoesNotHideTheVerifiedBackendImage() {
-        val maps = mapping(name = "/android/libproot-loader.so", inode = 1) + mapping()
+    @Test fun anotherLoaderMappingDoesNotHideTheVerifiedBackendImage() {
+        val maps = mapping(name = "/system/bin/linker64", inode = 1) + mapping()
         assertTrue(XboxCredentials.mapsBackend(maps, path, 42))
     }
     @Test fun loaderAloneOrAnotherGuestExecutableCannotAuthenticate() {
-        assertFalse(XboxCredentials.mapsBackend(mapping(name = "/android/libproot-loader.so"), path, 42))
+        assertFalse(XboxCredentials.mapsBackend(mapping(name = "/system/bin/linker64"), path, 42))
         assertFalse(XboxCredentials.mapsBackend(mapping(name = "/runtime/other-cli"), path, 42))
         assertFalse(XboxCredentials.mapsBackend(mapping(inode = 43), path, 42))
         assertFalse(XboxCredentials.mapsBackend(mapping(permissions = "r--p"), path, 42))

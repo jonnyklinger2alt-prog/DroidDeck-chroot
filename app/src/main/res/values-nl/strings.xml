@@ -597,11 +597,6 @@
     <string name="perf_fsync_hint">Draait de eigen fsync van Proton op de standaard Proton-bestanden, met futex_waitv in userspace geleverd, zodat er geen pakket nodig is en dit blijft werken zodra Steam Proton bijwerkt. Terwijl dit aan staat, gebruiken games dit vóór droiddeck-esync, behalve de paar die Proton niet op fsync laat draaien. Geldt vanaf de volgende sessie.</string>
     <string name="perf_esync_hint">De Windows-threads van games wachten via eventfd en gedeeld geheugen op elkaar, in plaats van heen-en-weer via wineserver. Gebruikt een droiddeck-esync-pakket dat voor die exacte Proton-build is gemaakt; pakketten worden automatisch gehaald. Totdat er een pakket is voor een nieuwe Proton-build, springt droiddeck-fsync in. Geldt vanaf de volgende sessie.</string>
     <string name="perf_xalia_hint">Schakelt de gamepadnavigatiehulp van Proton uit, die in elke game CPU kost.</string>
-    <string name="perf_seccomp">Draai proot zonder seccomp</string>
-    <string name="perf_seccomp_hint">Kan foutmeldingen over ontbrekende systeemaanroepen op sommige kernels verhelpen. Kan de prestaties verlagen.</string>
-    <string name="perf_fastpath">proot-snelpad</string>
-    <string name="perf_fastpath_needs_seccomp">Vereist het seccomp-filter van proot.</string>
-    <string name="perf_fastpath_hint">Snellere bestandstoegang en minder stotteren. Zet dit uit als een programma zijn bestanden niet kan vinden.</string>
     <string name="perf_cursor_composite">Cursor in gamescope tekenen</string>
     <string name="perf_cursor_composite_hint">Gamescope tekent de aanwijzer zelf in plaats van die aan Android over te laten. Zet dit aan voor een cursor die je met een controller bestuurt. Uit is sneller op een telefoon. Geldt vanaf de volgende sessie.</string>
     <string name="perf_identity">Sessie-identiteit</string>
@@ -1519,10 +1514,6 @@
     <string name="session_ended_desktop">De desktop is onverwacht gestopt. Deel de logs in een bugrapport of probeer het opnieuw.</string>
     <string name="session_ended_detail">Afsluitstatus %1$d · %2$s</string>
     <string name="session_ended_no_log">geen log</string>
-    <plurals name="session_hint_enosys">
-        <item quantity="one">Het log toont %1$d fout “Function not implemented”: de seccomp-versnelling van proot laat op dit apparaat een hulpprogramma falen. Probeer %2$s → “%3$s” (of “%4$s”) en start opnieuw.</item>
-        <item quantity="other">Het log toont %1$d fouten “Function not implemented”: de seccomp-versnelling van proot laat op dit apparaat een hulpprogramma falen. Probeer %2$s → “%3$s” (of “%4$s”) en start opnieuw.</item>
-    </plurals>
 
     <string name="mode_decky_plugins">Plug-ins</string>
     <string name="mode_decky_plugins_hint">Installeer een plug-in-ZIP voor de volgende Steam-sessie.</string>

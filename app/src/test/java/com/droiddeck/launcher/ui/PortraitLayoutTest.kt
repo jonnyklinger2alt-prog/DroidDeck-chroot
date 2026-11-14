@@ -82,7 +82,7 @@ class PortraitLayoutTest {
             }
         }
         compose.mainClock.advanceTimeBy(1_000)
-        for (key in listOf("games", "stores", "desktop", "components", "android-apps", "setup", "updates", "steam")) {
+        for (key in listOf("games", "stores", "desktop", "mobile", "components", "android-apps", "setup", "updates", "steam")) {
             compose.onNodeWithTag("rail-$key").performScrollTo()
             compose.mainClock.advanceTimeBy(1_000)
             compose.onNodeWithTag("rail-$key").assertIsDisplayed().performClick()

@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 object GuestCommand {
     fun run(context: Context, argv: List<String>, fakeRoot: Boolean = false, logName: String? = null,
-            linkDir: File? = null, extraBinds: List<String>? = null, fastPath: Boolean = false, cancelled: AtomicBoolean? = null,
+            extraBinds: List<String>? = null, cancelled: AtomicBoolean? = null,
             onLine: (String) -> Unit): Int {
         val log = logName?.let {
             try {
@@ -21,14 +21,14 @@ object GuestCommand {
         }
         log?.println("== ${java.util.Date()} ${argv.joinToString(" ")}")
         try {
-            return runLogged(context, argv, fakeRoot, linkDir, extraBinds, fastPath, cancelled) { line -> log?.println(line); log?.flush(); onLine(line) }
+            return runLogged(context, argv, fakeRoot, extraBinds, cancelled) { line -> log?.println(line); log?.flush(); onLine(line) }
         } finally {
             log?.close()
         }
     }
 
-    private fun runLogged(context: Context, argv: List<String>, fakeRoot: Boolean, linkDir: File?, extraBinds: List<String>?,
-                          fastPath: Boolean, cancelled: AtomicBoolean?, onLine: (String) -> Unit): Int {
+    private fun runLogged(context: Context, argv: List<String>, fakeRoot: Boolean, extraBinds: List<String>?,
+                          cancelled: AtomicBoolean?, onLine: (String) -> Unit): Int {
         val root = LinuxRuntime.rootDir(context)
         LinuxRuntime.writeAccounts(context)
         SessionFiles.stage(context, root)

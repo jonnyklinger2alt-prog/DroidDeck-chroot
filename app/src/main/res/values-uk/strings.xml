@@ -601,11 +601,6 @@
     <string name="perf_fsync_hint">Запускає власний fsync Proton на стандартних файлах Proton, а futex_waitv надається в просторі користувача, тому не потрібен пакет і все працює відразу після оновлення Proton у Steam. Поки це увімкнено, ігри використовують його раніше за droiddeck-esync, окрім кількох, де Proton тримає fsync вимкненим. Застосовується в наступному сеансі.</string>
     <string name="perf_esync_hint">Потоки Windows у грах чекають одне одного через eventfd і спільну пам’ять замість звернень до wineserver. Використовує пакет droiddeck-esync, створений саме для цієї збірки Proton; пакети завантажуються автоматично. Доки такого пакета немає для нової збірки Proton, його замінює droiddeck-fsync. Застосовується в наступному сеансі.</string>
     <string name="perf_xalia_hint">Вимикає помічник Proton для навігації геймпадом, який споживає ресурси CPU в кожній грі.</string>
-    <string name="perf_seccomp">Запускати proot без seccomp</string>
-    <string name="perf_seccomp_hint">Може усунути помилки відсутніх системних викликів на деяких ядрах. Може знизити продуктивність.</string>
-    <string name="perf_fastpath">Швидкий шлях proot</string>
-    <string name="perf_fastpath_needs_seccomp">Потребує фільтра seccomp у proot.</string>
-    <string name="perf_fastpath_hint">Швидший пошук файлів і менше запинок. Вимкніть, якщо програма не може знайти свої файли.</string>
     <string name="perf_cursor_composite">Малювати курсор усередині gamescope</string>
     <string name="perf_cursor_composite_hint">Gamescope сам малює вказівник замість передавати його Android. Увімкніть для курсора, керованого контролером. На телефоні швидше вимкнено. Застосовується в наступному сеансі.</string>
     <string name="perf_identity">Ідентифікація сеансу</string>
@@ -1551,12 +1546,6 @@
     <string name="session_ended_desktop">Робочий стіл несподівано зупинився. Додайте журнали до звіту про помилку або спробуйте ще раз.</string>
     <string name="session_ended_detail">Код завершення %1$d · %2$s</string>
     <string name="session_ended_no_log">немає журналу</string>
-    <plurals name="session_hint_enosys">
-        <item quantity="one">У журналі %1$d помилка «Function not implemented»: прискорення seccomp у proot порушує роботу допоміжної програми на цьому пристрої. Спробуйте %2$s → «%3$s» (або «%4$s») і запустіть знову.</item>
-        <item quantity="few">У журналі %1$d помилки «Function not implemented»: прискорення seccomp у proot порушує роботу допоміжної програми на цьому пристрої. Спробуйте %2$s → «%3$s» (або «%4$s») і запустіть знову.</item>
-        <item quantity="many">У журналі %1$d помилок «Function not implemented»: прискорення seccomp у proot порушує роботу допоміжної програми на цьому пристрої. Спробуйте %2$s → «%3$s» (або «%4$s») і запустіть знову.</item>
-        <item quantity="other">У журналі %1$d помилки «Function not implemented»: прискорення seccomp у proot порушує роботу допоміжної програми на цьому пристрої. Спробуйте %2$s → «%3$s» (або «%4$s») і запустіть знову.</item>
-    </plurals>
 
     <string name="mode_decky_plugins">Плагіни</string>
     <string name="mode_decky_plugins_hint">Встановіть плагін із ZIP для наступного сеансу Steam.</string>

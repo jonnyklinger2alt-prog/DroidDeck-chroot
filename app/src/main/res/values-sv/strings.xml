@@ -597,11 +597,6 @@
     <string name="perf_fsync_hint">Kör Protons egen fsync på de ursprungliga Proton-filerna, med futex_waitv tillhandahållen i användarutrymmet, så det behöver inget paket och fortsätter fungera så snart Steam uppdaterar Proton. Medan det är på använder spel det före droiddeck-esync, förutom de få som Proton håller borta från fsync. Gäller från nästa session.</string>
     <string name="perf_esync_hint">Spelens Windows-trådar väntar på varandra via eventfd och delat minne i stället för tur-och-returer genom wineserver. Använder ett droiddeck-esync-paket som är gjort för exakt det Proton-bygget; paket hämtas automatiskt. Tills ett sådant finns för ett nytt Proton-bygge används droiddeck-fsync i stället. Gäller från nästa session.</string>
     <string name="perf_xalia_hint">Inaktiverar Protons hjälp för handkontrollsnavigering, vilket kostar CPU i alla spel.</string>
-    <string name="perf_seccomp">Kör proot utan seccomp</string>
-    <string name="perf_seccomp_hint">Kan åtgärda fel med saknade systemanrop på vissa Linux-kärnor. Kan minska prestandan.</string>
-    <string name="perf_fastpath">proot snabbväg</string>
-    <string name="perf_fastpath_needs_seccomp">Kräver proots seccomp-filter.</string>
-    <string name="perf_fastpath_hint">Snabbare filuppslagningar och mindre hack. Stäng av om ett program inte hittar sina filer.</string>
     <string name="perf_cursor_composite">Rita markören i gamescope</string>
     <string name="perf_cursor_composite_hint">Gamescope ritar själv pekaren i stället för att lämna den till Android. Slå på för en handkontrollsstyrd markör. Av är snabbare på en telefon. Gäller från nästa session.</string>
     <string name="perf_identity">Sessionsidentitet</string>
@@ -1519,10 +1514,6 @@
     <string name="session_ended_desktop">Skrivbordet stoppades oväntat. Dela loggarna i en felrapport, eller försök igen.</string>
     <string name="session_ended_detail">Avslutningsstatus %1$d · %2$s</string>
     <string name="session_ended_no_log">ingen logg</string>
-    <plurals name="session_hint_enosys">
-        <item quantity="one">Loggen visar %1$d ”Function not implemented”-fel: proots seccomp-acceleration misslyckas med en hjälpprocess på den här enheten. Prova %2$s → ”%3$s” (eller ”%4$s”) och starta igen.</item>
-        <item quantity="other">Loggen visar %1$d ”Function not implemented”-fel: proots seccomp-acceleration misslyckas med en hjälpprocess på den här enheten. Prova %2$s → ”%3$s” (eller ”%4$s”) och starta igen.</item>
-    </plurals>
 
     <string name="mode_decky_plugins">Plugins</string>
     <string name="mode_decky_plugins_hint">Installera en plugin-zip för nästa Steam-session.</string>

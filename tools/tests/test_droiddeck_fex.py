@@ -568,7 +568,7 @@ class ExtractTest(FexTestCase):
     def test_other_uruntime_errors_are_not_taken_as_unpacked(self):
         self.assertFalse(FEX["only_xattrs_failed"]("write_xattr: could not write xattr\nwrite_file: failed to create file x\n"))
         self.assertFalse(FEX["only_xattrs_failed"](""))
-        self.assertTrue(FEX["only_xattrs_failed"]("proot error: execveat() failed\nwrite_xattr: could not write xattr\n"))
+        self.assertTrue(FEX["only_xattrs_failed"]("Failed to exec memfd\nwrite_xattr: could not write xattr\n"))
 
     def test_an_arm64_image_does_not_ask_for_fex(self):
         self.write(self.image, elf(183) + b"payload", 0o755)
