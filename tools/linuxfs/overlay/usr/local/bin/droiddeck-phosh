@@ -45,8 +45,17 @@ shell=$(phosh_bin) || { step "phosh is not installed"; exit 66; }
 
 export XDG_CURRENT_DESKTOP=Phosh:GNOME XDG_SESSION_DESKTOP=phosh XDG_SESSION_TYPE=wayland
 export GDK_BACKEND=wayland QT_QPA_PLATFORM=wayland
-# phoc's GPU renderer needs a DRM device the app's compositor does not expose, and crashes without one.
-[ "${BL_PHOSH_GPU:-0}" = 1 ] || export WLR_RENDERER=pixman
+# The app's compositor names no DRM device (Adreno gives apps no /dev/dri), so wlroots is pointed at
+# the session's render-node stand-in for the GPU; without one it can only composite in software.
+node=
+for candidate in /dev/dri/renderD*; do
+  [ -c "$candidate" ] && [ -r "$candidate" ] && [ -w "$candidate" ] && { node=$candidate; break; }
+done
+if [ "${BL_PHOSH_GPU:-1}" != 0 ] && [ -n "$node" ] && [ -z "${WLR_RENDERER:-}" ]; then
+  export WLR_RENDER_DRM_DEVICE=$node
+else
+  export WLR_RENDERER=pixman
+fi
 config=()
 [ -f /usr/share/phosh/phoc.ini ] && config=(-C /usr/share/phosh/phoc.ini)
 launch=(phoc "${config[@]}" -E "$shell")
@@ -54,5 +63,15 @@ if [ -z "${DBUS_SESSION_BUS_ADDRESS:-}" ] && command -v dbus-run-session >/dev/n
   launch=(dbus-run-session -- "${launch[@]}")
 fi
 
-step "starting $shell in phoc (${WLR_RENDERER:-gpu} renderer)"
+if [ -n "${WLR_RENDER_DRM_DEVICE:-}" ]; then
+  step "starting $shell in phoc on the GPU ($WLR_RENDER_DRM_DEVICE)"
+  started=$(date +%s)
+  "${launch[@]}"
+  rc=$?
+  [ "$rc" = 0 ] || [ $(( $(date +%s) - started )) -ge 15 ] && exit "$rc"
+  step "phoc exited with $rc on the GPU right away; starting it again in software"
+  unset WLR_RENDER_DRM_DEVICE
+  export WLR_RENDERER=pixman
+fi
+step "starting $shell in phoc (software renderer)"
 exec "${launch[@]}"
