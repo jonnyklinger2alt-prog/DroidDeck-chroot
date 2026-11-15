@@ -18,12 +18,21 @@ installed() {
   done
 }
 
+# dbus-x11 satisfies phosh's session bus without dbus-user-session, which drags in systemd and its
+# postinst cannot run in the chroot; phosh aborts without gnome-settings-daemon's schemas.
+packages=(phosh phoc dbus-x11 gsettings-desktop-schemas gnome-settings-daemon-common adwaita-icon-theme)
 apt=(env DEBIAN_FRONTEND=noninteractive apt-get -o DPkg::Lock::Timeout=600 -o Dpkg::Options::=--force-confold)
-if ! installed phosh phoc gsettings-desktop-schemas || ! phosh_bin >/dev/null; then
+if ! installed "${packages[@]}" || ! phosh_bin >/dev/null; then
   step "installing Phosh from Ubuntu (first start only, a few hundred MB)"
+  status=$(dpkg-query -W -f='${Status}' systemd 2>/dev/null)
+  if [ -n "$status" ] && [ "$status" != "install ok installed" ] && [ "${status#*not-installed}" = "$status" ]; then
+    step "removing a half-installed systemd left by an earlier attempt"
+    droiddeck-root env DEBIAN_FRONTEND=noninteractive dpkg --purge --force-depends dbus-user-session libpam-systemd systemd-sysv systemd \
+      || step "could not remove the half-installed systemd"
+  fi
   droiddeck-root env DEBIAN_FRONTEND=noninteractive dpkg --configure -a || step "dpkg --configure -a did not finish cleanly"
   droiddeck-root "${apt[@]}" update || { step "apt-get update failed"; exit 69; }
-  droiddeck-root "${apt[@]}" install -y --no-install-recommends phosh phoc gsettings-desktop-schemas adwaita-icon-theme \
+  droiddeck-root "${apt[@]}" install -y --no-install-recommends "${packages[@]}" \
     || { step "installing phosh and phoc failed"; exit 69; }
   installed squeekboard || droiddeck-root "${apt[@]}" install -y --no-install-recommends squeekboard \
     || step "squeekboard is not available; Android's keyboard stays the way to type"
