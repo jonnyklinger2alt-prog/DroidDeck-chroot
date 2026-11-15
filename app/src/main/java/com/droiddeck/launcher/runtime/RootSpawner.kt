@@ -169,6 +169,7 @@ object RootSpawner {
     }
 
     private fun signal(top: Int, signal: Int) {
+        ChrootLauncher.relay(top, signal)
         val parents = HashMap<Int, Int>()
         File("/proc").listFiles()?.forEach { dir ->
             val pid = dir.name.toIntOrNull() ?: return@forEach

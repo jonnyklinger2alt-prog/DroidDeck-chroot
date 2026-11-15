@@ -29,6 +29,7 @@ internal class SessionSuspendController(
     private val readBackAllowed: () -> Boolean = { true },
     private val pagedIn: (processes: Int, swapKb: Long, swapBeforeKb: Long, availableKb: Long, millis: Long) -> Unit =
         { _, _, _, _, _ -> },
+    private val relay: (Int, Int) -> Unit = com.droiddeck.launcher.runtime.ChrootLauncher::relay,
 ) {
     private enum class Role { SESSION_ROOT, SESSION_CHILD, HELPER_ROOT, HELPER_CHILD }
 
@@ -438,6 +439,7 @@ internal class SessionSuspendController(
             this.signal(record.pid, signal)
         } catch (_: Throwable) {
         }
+        if (record.role == Role.SESSION_ROOT || record.role == Role.HELPER_ROOT) relay(record.pid, signal)
     }
 
     private fun isRunningOrGone(record: ProcessRecord): Boolean {

@@ -10,6 +10,7 @@ object ChrootLauncher {
     private const val SHELL = "/system/bin/sh"
 
     @Volatile private var installed: File? = null
+    @Volatile private var controlDir: File? = null
     @Volatile private var rootChecked: Boolean? = null
 
     @JvmStatic
@@ -25,7 +26,30 @@ object ChrootLauncher {
             if (!staged.renameTo(file)) throw IOException("Cannot stage $file")
         }
         installed = file
+        controlDir = dir
         return file
+    }
+
+    @JvmStatic
+    fun relay(pid: Int, signal: Int) {
+        val pipe = File(controlDir ?: return, "ctl.$pid")
+        if (!pipe.exists()) return
+        val command = when (signal) {
+            android.system.OsConstants.SIGSTOP -> "stop"
+            android.system.OsConstants.SIGCONT -> "cont"
+            else -> signal.toString()
+        }
+        try {
+            val fd = android.system.Os.open(pipe.path,
+                android.system.OsConstants.O_WRONLY or android.system.OsConstants.O_NONBLOCK or android.system.OsConstants.O_CLOEXEC, 0)
+            try {
+                android.system.Os.write(fd, "$command\n".toByteArray(), 0, command.length + 1)
+            } finally {
+                android.system.Os.close(fd)
+            }
+        } catch (e: Exception) {
+            android.util.Log.w("ChrootLauncher", "could not pass $command to launcher $pid: $e")
+        }
     }
 
     @JvmStatic

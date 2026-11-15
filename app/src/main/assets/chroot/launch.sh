@@ -15,15 +15,33 @@ find_su() {
 
 if [ "$1" != "--as-root" ] && [ "$1" != "--in-ns" ]; then
     if [ "$(id -u)" = 0 ]; then
-        exec /system/bin/sh "$self" --as-root "$PPID" "" "$@"
+        exec /system/bin/sh "$self" --as-root "$PPID" "" "" "$@"
     fi
     # Not every root manager's su keeps the caller's environment, so it travels in a private file.
     umask 077
     envfile="${self%/*}/env.$$"
     export -p >"$envfile"
+    # The app sends stop/cont through this pipe. This shell stays the process the app tracks and the
+    # pipe's only writer, so the root side reads end of file once it is gone; mksh does not hand
+    # descriptors opened with exec on to su.
+    ctl="${self%/*}/ctl.$$"
+    rm -f "$ctl"
+    if mkfifo "$ctl" 2>/dev/null; then exec 9<>"$ctl"; else ctl=; fi
     args=""
     for a in "$@"; do args="$args $(quote "$a")"; done
-    exec "$(find_su)" -c "exec /system/bin/sh $(quote "$self") --as-root $$ $(quote "$envfile")$args"
+    exec 3<&0
+    "$(find_su)" -c "exec /system/bin/sh $(quote "$self") --as-root $$ $(quote "$envfile") $(quote "$ctl")$args" <&3 3<&- 9>&- &
+    su_pid=$!
+    exec 3<&-
+    trap 'kill -TERM $su_pid 2>/dev/null' TERM HUP INT
+    wait "$su_pid"
+    status=$?
+    while [ $status -gt 128 ] && kill -0 "$su_pid" 2>/dev/null; do
+        wait "$su_pid"
+        status=$?
+    done
+    [ -n "$ctl" ] && rm -f "$ctl"
+    exit $status
 fi
 
 phase="$1"
@@ -32,7 +50,8 @@ if [ "$phase" = --as-root ]; then
     umask 022
     caller="$1"
     envfile="$2"
-    shift 2
+    ctl="$3"
+    shift 3
     if [ -n "$envfile" ]; then
         while IFS= read -r line; do
             case "$line" in
@@ -130,45 +149,72 @@ if [ "$phase" = --as-root ]; then
     hardlink_l2s
     set -- --root "$root" --cwd "$cwd" --uid "$uid" --gid "$gid" --groups "$groups" --hostname "$hostname" --log "$log" "$@"
     [ "$fake" = 1 ] && set -- --fake-root "$@"
+    if [ -n "$ctl" ] && [ -p "$ctl" ] && [ -d "/proc/$caller" ]; then
+        exec 8<"$ctl"
+    else
+        ctl=
+    fi
     exec 3<&0
     if unshare -m -p -f -u true 2>/dev/null; then
-        BUSYBOX="$bb" PIDNS=1 unshare -m -p -f -u /system/bin/sh "$self" --in-ns "$@" <&3 3<&- &
+        BUSYBOX="$bb" PIDNS=1 unshare -m -p -f -u /system/bin/sh "$self" --in-ns "$@" <&3 3<&- 8<&- 9>&- &
     else
-        BUSYBOX="$bb" PIDNS=0 unshare -m -u /system/bin/sh "$self" --in-ns "$@" <&3 3<&- &
+        BUSYBOX="$bb" PIDNS=0 unshare -m -u /system/bin/sh "$self" --in-ns "$@" <&3 3<&- 8<&- 9>&- &
     fi
     child=$!
     exec 3<&-
 
-    stop() {
-        init=$(cat /proc/$child/task/$child/children 2>/dev/null)
+    signal_guest() {
+        init=
+        read -r init _ 2>/dev/null <"/proc/$child/task/$child/children"
         if [ -n "$init" ] && [ "$(readlink /proc/$init/ns/pid)" != "$(readlink /proc/self/ns/pid)" ]; then
             ns=$(readlink /proc/$init/ns/pid)
             for p in /proc/[0-9]*; do
-                [ "$(readlink $p/ns/pid 2>/dev/null)" = "$ns" ] && kill -TERM "${p#/proc/}" 2>/dev/null
+                [ "$(readlink $p/ns/pid 2>/dev/null)" = "$ns" ] && kill -"$1" "${p#/proc/}" 2>/dev/null
             done
-            sleep 3
-            kill -KILL "$init" 2>/dev/null
         else
-            kill -TERM "$child" 2>/dev/null
-            sleep 3
+            kill -"$1" "$child" 2>/dev/null
         fi
+    }
+
+    stop() {
+        signal_guest CONT
+        signal_guest TERM
+        sleep 3
+        init=
+        read -r init _ 2>/dev/null <"/proc/$child/task/$child/children"
+        [ -n "$init" ] && kill -KILL "$init" 2>/dev/null
         kill -KILL "$child" 2>/dev/null
     }
 
-    (
-        while kill -0 "$child" 2>/dev/null; do
-            if [ -n "$caller" ] && [ ! -d "/proc/$caller" ]; then
-                stop
-                break
-            fi
-            sleep 1
-        done
-    ) </dev/null >/dev/null 2>&1 &
+    if [ -n "$ctl" ]; then
+        (
+            while IFS= read -r command <&8; do
+                case "$command" in
+                    stop) signal_guest STOP ;;
+                    cont) signal_guest CONT ;;
+                    [0-9]|[0-9][0-9]) signal_guest "$command" ;;
+                esac
+            done
+            kill -0 "$child" 2>/dev/null && stop
+        ) </dev/null >/dev/null 2>&1 9>&- &
+    else
+        (
+            while kill -0 "$child" 2>/dev/null; do
+                if [ -n "$caller" ] && [ ! -d "/proc/$caller" ]; then
+                    stop
+                    break
+                fi
+                sleep 5
+            done
+        ) </dev/null >/dev/null 2>&1 9>&- &
+    fi
     watchdog=$!
+    exec 8<&-
     trap 'stop' TERM HUP INT
     wait "$child"
     status=$?
     kill "$watchdog" 2>/dev/null
+    [ -n "$ctl" ] && rm -f "$ctl"
     say "guest exited with status $status"
     # Real root writes uid 0 files, but the app owns the rootfs and must be able to update and remove it.
     if [ "$fake" = 1 ]; then
